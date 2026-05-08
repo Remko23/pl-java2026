@@ -1,0 +1,195 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+
+:root {
+  --bg-color: #050505;
+  --text-color: #ffffff;
+  --neon-purple: #bc13fe;
+  --neon-orange: #ff6700;
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-blur: blur(25px);
+}
+
+html,
+body {
+  background: var(--bg-color) !important;
+  color: var(--text-color) !important;
+  font-family: 'Outfit', sans-serif !important;
+  margin: 0 !important;
+  height: 100% !important;
+}
+
+/* Deeper Background effect */
+body {
+  background: radial-gradient(circle at 15% 20%, rgba(188, 19, 254, 0.2) 0%, transparent 45%),
+    radial-gradient(circle at 85% 80%, rgba(255, 103, 0, 0.2) 0%, transparent 45%),
+    var(--bg-color) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+#kc-header {
+  display: none !important;
+}
+
+/* The Login Card - targeting multiple possible Keycloak versions */
+.card-pf,
+.pf-c-card,
+.login-pf-page .card-pf {
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(188, 19, 254, 0.1) !important;
+  border-radius: 24px !important;
+  padding: 3rem 2.5rem !important;
+  max-width: 480px !important;
+  width: 90% !important;
+  margin: auto !important;
+  transition: all 0.4s ease !important;
+}
+
+.card-pf:hover {
+  border-color: rgba(188, 19, 254, 0.3) !important;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(188, 19, 254, 0.2) !important;
+}
+
+#kc-page-title {
+  color: var(--text-color) !important;
+  font-size: 2.25rem !important;
+  font-weight: 800 !important;
+  text-align: center !important;
+  margin-bottom: 2.5rem !important;
+  letter-spacing: -0.03em !important;
+  border: none !important;
+}
+
+/* The neon TruthLens subtitle */
+#kc-page-title::after {
+  content: 'TruthLens Verification';
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  color: var(--neon-purple);
+  margin-top: 0.75rem;
+  text-shadow: 0 0 10px rgba(188, 19, 254, 0.8);
+  font-weight: 600;
+}
+
+.form-group label,
+.pf-c-form__label {
+  color: var(--text-color) !important;
+  font-size: 0.8rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1.5px !important;
+  opacity: 0.7 !important;
+  margin-bottom: 0.75rem !important;
+  font-weight: 600 !important;
+}
+
+.form-control,
+.pf-c-form-control,
+.pf-c-input-group {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 12px !important;
+  color: white !important;
+  padding: 14px 18px !important;
+  height: auto !important;
+  transition: all 0.3s !important;
+}
+
+.pf-c-input-group .pf-c-form-control {
+  border: none !important;
+  background: transparent !important;
+  padding-right: 0 !important;
+}
+
+.pf-c-input-group button,
+.pf-c-input-group .pf-c-button {
+  background: transparent !important;
+  border: none !important;
+  color: white !important;
+  padding: 0 15px !important;
+  opacity: 0.7 !important;
+}
+
+.form-control:focus,
+.pf-c-form-control:focus,
+.pf-c-input-group:focus-within {
+  background: rgba(255, 255, 255, 0.07) !important;
+  border-color: var(--neon-purple) !important;
+  box-shadow: 0 0 15px rgba(188, 19, 254, 0.3) !important;
+  outline: none !important;
+}
+
+/* Login Button */
+.btn-primary,
+.pf-m-primary {
+  background: linear-gradient(135deg, rgba(188, 19, 254, 0.3) 0%, rgba(188, 19, 254, 0.1) 100%) !important;
+  border: 1px solid var(--neon-purple) !important;
+  color: white !important;
+  font-weight: 700 !important;
+  padding: 14px !important;
+  border-radius: 12px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 2px !important;
+  margin-top: 1.5rem !important;
+  cursor: pointer !important;
+}
+
+.btn-primary:hover,
+.pf-m-primary:hover {
+  background: rgba(188, 19, 254, 0.5) !important;
+  box-shadow: 0 0 25px rgba(188, 19, 254, 0.5) !important;
+  transform: translateY(-3px) !important;
+}
+
+.btn-primary:active {
+  transform: translateY(-1px) !important;
+}
+
+/* Register Link */
+#kc-registration,
+.login-pf-signup {
+  margin-top: 2rem !important;
+  text-align: center !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+  font-size: 0.9rem !important;
+}
+
+#kc-registration a,
+.login-pf-signup a {
+  color: var(--neon-orange) !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+  margin-left: 5px !important;
+  transition: all 0.3s !important;
+}
+
+#kc-registration a:hover,
+.login-pf-signup a:hover {
+  text-shadow: 0 0 10px rgba(255, 103, 0, 0.6) !important;
+  text-decoration: underline !important;
+}
+
+/* Hide clutter */
+#kc-login-options,
+.login-pf-settings {
+  display: none !important;
+}
+
+#kc-info-wrapper {
+  background: none !important;
+  border: none !important;
+}
+
+/* Checkbox style */
+input[type="checkbox"] {
+  accent-color: var(--neon-purple) !important;
+}

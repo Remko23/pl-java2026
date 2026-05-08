@@ -11,10 +11,17 @@ services:
       KC_DB_PASSWORD: password
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
+      # Start in dev mode for local testing
       KC_HOSTNAME_STRICT: "false"
-    command: start-dev
+      KC_HTTP_ENABLED: "true"
+      KC_THEME_WELCOME_CACHE: "false"
+      KC_THEME_CACHE: "false"
+    command: start-dev --import-realm
     ports:
       - "8081:8080"
+    volumes:
+      - ./keycloak-theme/truthlens:/opt/keycloak/themes/truthlens
+      - ./keycloak-config:/opt/keycloak/data/import
     depends_on:
       - postgres
 
