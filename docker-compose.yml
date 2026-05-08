@@ -11,7 +11,6 @@ services:
       KC_DB_PASSWORD: password
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-      # Start in dev mode for local testing
       KC_HOSTNAME_STRICT: "false"
     command: start-dev
     ports:
@@ -31,5 +30,36 @@ services:
     volumes:
       - keycloak-data:/var/lib/postgresql/data
 
+  backend:
+    build:
+      context: ./backend
+    container_name: truthlens-backend
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./backend/.env
+    extra_hosts:
+      - "localhost:host-gateway"
+    depends_on:
+      - keycloak
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: truthlens-frontend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./frontend/.env.local
+    environment:
+      - AUTH_TRUST_HOST=true
+      - AUTH_URL=http://localhost:3000
+    extra_hosts:
+      - "localhost:host-gateway"
+    depends_on:
+      - backend
+
 volumes:
   keycloak-data:
+    name: backend_keycloak-data
+    external: true
