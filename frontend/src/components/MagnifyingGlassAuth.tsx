@@ -4,23 +4,22 @@ const MagnifyingGlassAuth = () => {
   return (
     <div className="magnifier-container">
       <div className="magnifier-lens glass neon-border-orange">
-        <div className="auth-form">
-          <h2 className="text-neon-orange" style={{ marginBottom: '1.5rem', textAlign: 'center' }}>Login</h2>
-          <form style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-            <div className="input-group">
-              <label>Email</label>
-              <input type="email" placeholder="Enter your email" />
-            </div>
-            <div className="input-group">
-              <label>Password</label>
-              <input type="password" placeholder="••••••••" />
-            </div>
-            <button className="auth-button neon-border-orange" type="button">
-              Sign In
-            </button>
-            <p style={{ textAlign: 'center', fontSize: '0.9rem', opacity: 0.7 }}>
-              Don't have an account? <span className="text-neon-yellow" style={{ cursor: 'pointer' }}>Register</span>
+        <div className="auth-form" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+          <h2 className="text-neon-orange" style={{ marginBottom: '1.5rem', textAlign: 'center' }}>Keycloak Auth</h2>
+          <form 
+            action={async () => {
+              "use server"
+              const { signIn } = await import("@/auth");
+              await signIn("keycloak", { redirectTo: "/dashboard" });
+            }}
+            style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', width: '100%' }}
+          >
+            <p style={{ textAlign: 'center', marginBottom: '1rem', fontSize: '0.9rem', opacity: 0.8 }}>
+              Click below to authenticate via your organization's Keycloak server.
             </p>
+            <button className="auth-button neon-border-orange" type="submit" style={{ cursor: 'pointer' }}>
+              Sign In with Keycloak
+            </button>
           </form>
         </div>
       </div>

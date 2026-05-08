@@ -15,16 +15,6 @@ export default function AnalyzePage() {
       display: 'flex',
       flexDirection: 'column'
     }}>
-      <Link href="/" style={{ 
-        display: 'inline-flex', 
-        alignItems: 'center', 
-        gap: '0.5rem',
-        opacity: 0.8,
-        marginBottom: '3rem',
-        alignSelf: 'flex-start'
-      }}>
-        ← Back to Home
-      </Link>
 
       <header style={{ textAlign: 'center', marginBottom: '3rem' }}>
         <h1 style={{ fontSize: '3rem', marginBottom: '1rem' }}>

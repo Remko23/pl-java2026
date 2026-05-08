@@ -30,7 +30,7 @@ export default function Home() {
         margin: '0 auto'
       }}>
         <GlassTile
-          title="Conduct Analysis"
+          title="Analyze"
           description="Upload a screenshot of an article or social media post to verify its truthfulness."
           icon="🔍"
           color="purple"
