@@ -28,8 +28,9 @@ export default async function AuthPage() {
         opacity: 0.8
       }}>
         <p>
-          Access the <span className="text-neon-orange">TruthLens</span> system. 
-          The magnifying glass symbolizes our mission of thorough fact-checking. Log in to manage your verifications.
+          Access the <span className="text-neon-orange">TruthLens</span> system.
+          <br/> 
+          "You were built to protect those who cannot protect themselves."
         </p>
       </div>
     </div>

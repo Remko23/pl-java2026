@@ -15,7 +15,7 @@ const MagnifyingGlassAuth = () => {
             style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', width: '100%' }}
           >
             <p style={{ textAlign: 'center', marginBottom: '1rem', fontSize: '0.9rem', opacity: 0.8 }}>
-              Click below to authenticate via your organization's Keycloak server.
+              Click below to authenticate via Keycloak.
             </p>
             <button className="auth-button neon-border-orange" type="submit" style={{ cursor: 'pointer' }}>
               Sign In with Keycloak
