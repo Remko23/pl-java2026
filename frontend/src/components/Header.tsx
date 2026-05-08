@@ -25,7 +25,13 @@ export default async function Header() {
       
       {session && (
         <>
-          <nav style={{ display: 'flex', gap: '2rem' }}>
+          <nav style={{ 
+            display: 'flex', 
+            gap: '2rem',
+            position: 'absolute',
+            left: '50%',
+            transform: 'translateX(-50%)'
+          }}>
             <Link href="/dashboard" style={{ textDecoration: 'none', color: 'white', fontWeight: 500, opacity: 0.9 }}>Dashboard</Link>
             <Link href="/analyze" style={{ textDecoration: 'none', color: 'white', fontWeight: 500, opacity: 0.9 }}>Analyze</Link>
             <Link href="/history" style={{ textDecoration: 'none', color: 'white', fontWeight: 500, opacity: 0.9 }}>History</Link>
