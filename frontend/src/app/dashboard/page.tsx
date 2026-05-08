@@ -13,8 +13,8 @@ export default async function DashboardPage() {
   return (
     <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto', minHeight: '100vh' }}>
       <div style={{ marginBottom: '2rem' }}>
-        <h2 style={{ fontSize: '2rem' }}>Twój Panel</h2>
-        <p style={{ opacity: 0.8 }}>Wybierz akcję, aby rozpocząć lub sprawdzić historię.</p>
+        <h2 style={{ fontSize: '2rem' }}>Your Dashboard</h2>
+        <p style={{ opacity: 0.8 }}>Select an action to start or view history.</p>
       </div>
 
       <section style={{
@@ -37,7 +37,7 @@ export default async function DashboardPage() {
           description="View history of your previous analyses and their results. (soon)"
           icon="📚"
           color="orange"
-          href="#"
+          href="/history"
           actionText="History"
         />
       </section>

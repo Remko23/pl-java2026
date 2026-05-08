@@ -79,12 +79,12 @@ body::before {
 /* Magnifier Styles */
 .magnifier-container {
   position: relative;
-  width: 500px;
-  height: 500px;
+  width: 380px;
+  height: 380px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 5rem auto;
+  margin: 2rem auto;
 }
 
 .magnifier-lens {
@@ -94,7 +94,7 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 3rem;
+  padding: 2rem;
   z-index: 2;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.03);
@@ -104,12 +104,12 @@ body::before {
 
 .magnifier-handle {
   position: absolute;
-  width: 150px;
-  height: 40px;
+  width: 120px;
+  height: 30px;
   background: var(--glass-bg);
   backdrop-filter: blur(10px);
-  bottom: -40px;
-  right: -60px;
+  bottom: -30px;
+  right: -50px;
   transform: rotate(45deg);
   border-radius: 0 10px 10px 0;
   z-index: 1;

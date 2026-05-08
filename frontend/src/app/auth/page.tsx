@@ -1,27 +1,23 @@
 import MagnifyingGlassAuth from '@/components/MagnifyingGlassAuth';
-import Link from 'next/link';
+import { auth } from '@/auth';
+import { redirect } from 'next/navigation';
 
-export default function AuthPage() {
+export default async function AuthPage() {
+  const session = await auth();
+
+  if (session) {
+    redirect('/dashboard');
+  }
+
   return (
     <div style={{ 
-      minHeight: '100vh', 
+      minHeight: '80vh', 
       display: 'flex', 
       flexDirection: 'column',
       alignItems: 'center', 
       justifyContent: 'center',
       padding: '2rem'
     }}>
-      <Link href="/" style={{ 
-        position: 'absolute', 
-        top: '2rem', 
-        left: '2rem', 
-        display: 'flex', 
-        alignItems: 'center', 
-        gap: '0.5rem',
-        opacity: 0.8
-      }}>
-        ← Back to Home
-      </Link>
       
       <MagnifyingGlassAuth />
       
