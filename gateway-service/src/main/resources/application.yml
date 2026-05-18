@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: truthlens-gateway
+  config:
+    import: "optional:configserver:http://truthlens-config-server:8888"
+  cloud:
+    config:
+      fail-fast: true
+      retry:
+        initial-interval: 2000
+        max-interval: 10000
+        multiplier: 1.5
+        max-attempts: 15
+
+server:
+  port: 8080
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://truthlens-discovery-server:8761/eureka/
