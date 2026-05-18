@@ -1,6 +1,28 @@
 version: '3.8'
 
 services:
+
+  config-server:
+    build:
+      context: ./config-server
+    container_name: truthlens-config-server
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./config-repo:/config-repo
+    environment:
+      - SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS=file:///config-repo
+
+  discovery-server:
+    build:
+      context: ./discovery-server
+    container_name: truthlens-discovery-server
+    ports:
+      - "8761:8761"
+    depends_on:
+      - config-server
+
+
   keycloak:
     image: quay.io/keycloak/keycloak:24.0.3
     container_name: truthlens-keycloak
@@ -41,6 +63,7 @@ services:
     build:
       context: ./backend
     container_name: truthlens-backend
+    restart: on-failure
     ports:
       - "8080:8080"
     env_file:
@@ -49,6 +72,9 @@ services:
       - "localhost:host-gateway"
     depends_on:
       - keycloak
+      - postgres
+      - config-server
+      - discovery-server
 
   frontend:
     build:

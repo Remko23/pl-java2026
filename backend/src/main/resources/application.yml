@@ -1,33 +1,10 @@
 spring:
   application:
     name: truthlens-backend
+  config:
+    import: "configserver:http://truthlens-config-server:8888"
 
-  # Database Configuration
-  datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
-    driver-class-name: org.postgresql.Driver
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-
-  # Security Configuration (OAuth2 Resource Server)
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${KEYCLOAK_ISSUER_URI}
-
-  # Java 21 Virtual Threads
-  threads:
-    virtual:
-      enabled: true
-
-server:
-  port: 8080
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://truthlens-discovery-server:8761/eureka/

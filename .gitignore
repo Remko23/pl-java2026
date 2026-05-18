@@ -1,5 +1,5 @@
 # Credentials and Environment Variables
-.env
+frontend/.env.local
 .env.*
 !.env.example
 *.pem
@@ -37,3 +37,8 @@ db-data/
 *.swo
 .DS_Store
 Thumbs.db
+
+.env
+.env.*
+backend/.env
+frontend/.env.local
