@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: truthlens-gateway-test
+  cloud:
+    config:
+      enabled: false
+  main:
+    web-application-type: reactive
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: "http://localhost:8080/realms/truthlens"
+          jwk-set-uri: "http://localhost:8080/realms/truthlens/protocol/openid-connect/certs"
+
+eureka:
+  client:
+    enabled: false
+
+truthlens:
+  gateway:
+    cors:
+      allowed-origins: "http://localhost:3000"
+    rate-limit:
+      replenish-rate: 5
+      burst-capacity: 10
