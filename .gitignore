@@ -1,5 +1,7 @@
-# Credentials and Environment Variables
-frontend/.env.local
+# ==========================================
+# Credentials, Secrets, and Environment Files
+# ==========================================
+.env
 .env.*
 !.env.example
 *.pem
@@ -8,40 +10,63 @@ frontend/.env.local
 secrets/
 credentials.json
 
-# Backend (Java/Spring Boot)
-backend/target/
-backend/*.iml
+# ==========================================
+# Java / Spring Boot (Maven/Gradle)
+# ==========================================
+target/
+**/target/
+build/
+**/build/
 *.class
 *.jar
 *.war
 *.ear
+*.iml
+*.lst
 
-# Frontend (Node.js/Next.js)
-frontend/node_modules/
-frontend/.next/
-frontend/out/
-frontend/build/
+# ==========================================
+# Frontend (Node.js / Next.js)
+# ==========================================
+node_modules/
+**/node_modules/
+.next/
+**/.next/
+out/
+**/out/
+dist/
+**/dist/
+.vercel/
+*.tsbuildinfo
+next-env.d.ts
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.pnpm-debug.log*
 
-# Docker / Local DB Volumes
+# ==========================================
+# Docker & Local Database Volumes
+# ==========================================
 keycloak-data/
 postgres-data/
 db-data/
 
-# IDEs and OS Files
+# ==========================================
+# IDEs, Editors, and OS files
+# ==========================================
 .idea/
 .vscode/
 *.swp
 *.swo
+*.iws
+*.ipr
+.classpath
+.project
+.settings/
+.nb-gradle/
+nbproject/
+nbbuild/
+.sts4-cache/
 .DS_Store
 Thumbs.db
-
-.env
-.env.*
-backend/.env
-frontend/.env.local
-
 
 .agent/
