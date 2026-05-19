@@ -24,7 +24,7 @@ public class GatewayStepDefinitions {
     @When("the user sends {int} requests to {string}")
     public void the_user_sends_requests(int count, String path) {
         IntStream.range(0, count).forEach(i -> {
-            lastResponse = webTestClient.get().uri(path).exchange();
+            lastResponse = webTestClient.get().uri(java.util.Objects.requireNonNull(path)).exchange();
         });
     }
 
@@ -37,8 +37,8 @@ public class GatewayStepDefinitions {
     @Given("a preflight OPTIONS request to {string} from {string}")
     public void a_preflight_options_request(String path, String origin) {
         lastResponse = webTestClient.options()
-                .uri(path)
-                .header("Origin", origin)
+                .uri(java.util.Objects.requireNonNull(path))
+                .header("Origin", java.util.Objects.requireNonNull(origin))
                 .header("Access-Control-Request-Method", "GET")
                 .exchange();
     }
@@ -55,6 +55,9 @@ public class GatewayStepDefinitions {
 
     @And("the response should contain header {string} with value {string}")
     public void the_response_should_contain_header(String header, String value) {
-        lastResponse.expectHeader().valueEquals(header, value);
+        lastResponse.expectHeader().valueEquals(
+                java.util.Objects.requireNonNull(header), 
+                java.util.Objects.requireNonNull(value)
+        );
     }
 }
