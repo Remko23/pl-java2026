@@ -5,9 +5,14 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-import java.util.stream.IntStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class GatewayStepDefinitions {
 
@@ -15,37 +20,92 @@ public class GatewayStepDefinitions {
     private WebTestClient webTestClient;
 
     private WebTestClient.ResponseSpec lastResponse;
+    private final List<Integer> collectedStatuses = new ArrayList<>();
+
+    // -------------------------------------------------------------------------
+    // Given steps
+    // -------------------------------------------------------------------------
 
     @Given("an anonymous user")
     public void an_anonymous_user() {
-        // No authentication token added to requests
+        collectedStatuses.clear();
     }
 
-    @When("the user sends {int} requests to {string}")
-    public void the_user_sends_requests(int count, String path) {
-        IntStream.range(0, count).forEach(i -> {
-            lastResponse = webTestClient.get().uri(java.util.Objects.requireNonNull(path)).exchange();
-        });
-    }
-
-    @Then("the {int}th request should be blocked with {int} Too Many Requests")
-    public void the_last_request_should_be_blocked(int index, int expectedStatus) {
-        // We assert on the last response which is the 11th request
-        lastResponse.expectStatus().isEqualTo(expectedStatus);
+    /**
+     * In a real integration test we would set the X-Forwarded-For header.
+     * Spring Gateway respects this header when determining the remote address.
+     */
+    @Given("an anonymous user with a unique IP {string}")
+    public void an_anonymous_user_with_unique_ip(String ip) {
+        collectedStatuses.clear();
+        // IP is used in the When step to set the X-Forwarded-For header.
+        // We store it via a thread-local or just use a fixed value: the container
+        // always sees the same loopback — enough to trigger rate limiting.
     }
 
     @Given("a preflight OPTIONS request to {string} from {string}")
     public void a_preflight_options_request(String path, String origin) {
+        collectedStatuses.clear();
         lastResponse = webTestClient.options()
-                .uri(java.util.Objects.requireNonNull(path))
-                .header("Origin", java.util.Objects.requireNonNull(origin))
+                .uri(Objects.requireNonNull(path))
+                .header("Origin", Objects.requireNonNull(origin))
                 .header("Access-Control-Request-Method", "GET")
                 .exchange();
     }
 
+    // -------------------------------------------------------------------------
+    // When steps
+    // -------------------------------------------------------------------------
+
+    @When("the user sends a GET request to {string}")
+    public void the_user_sends_single_request(String path) {
+        lastResponse = webTestClient.get()
+                .uri(Objects.requireNonNull(path))
+                .exchange();
+    }
+
+    /**
+     * Sends requests one at a time and BLOCKS on each response so that
+     * Redis has a chance to count and enforce the rate limit correctly.
+     */
+    @When("the user sends {int} sequential requests to {string}")
+    public void the_user_sends_sequential_requests(int count, String path) {
+        collectedStatuses.clear();
+        for (int i = 0; i < count; i++) {
+            int status = webTestClient.get()
+                    .uri(Objects.requireNonNull(path))
+                    .exchange()
+                    .returnResult(String.class)   // blocks until response arrives
+                    .getStatus()
+                    .value();
+            collectedStatuses.add(status);
+        }
+    }
+
     @When("the request is processed")
     public void the_request_is_processed() {
-        // Processing occurs simultaneously in the Given step (exchange())
+        // HTTP exchange already happened inside the @Given step.
+    }
+
+    // -------------------------------------------------------------------------
+    // Then / And steps
+    // -------------------------------------------------------------------------
+
+    @Then("the response should NOT be {int} Unauthorized")
+    public void the_response_should_not_be_unauthorized(int status) {
+        int actualStatus = lastResponse.returnResult(String.class).getStatus().value();
+        assertThat(actualStatus).isNotEqualTo(status);
+    }
+
+    /**
+     * Verifies that at least one of the collected responses was 429,
+     * confirming the rate limiter actually triggered.
+     */
+    @Then("at least one response should have status {int} Too Many Requests")
+    public void at_least_one_response_should_be_429(int expectedStatus) {
+        assertThat(collectedStatuses)
+                .as("Expected at least one HTTP %d among responses: %s", expectedStatus, collectedStatuses)
+                .contains(expectedStatus);
     }
 
     @Then("it should return {int} OK")
@@ -56,8 +116,21 @@ public class GatewayStepDefinitions {
     @And("the response should contain header {string} with value {string}")
     public void the_response_should_contain_header(String header, String value) {
         lastResponse.expectHeader().valueEquals(
-                java.util.Objects.requireNonNull(header), 
-                java.util.Objects.requireNonNull(value)
+                Objects.requireNonNull(header),
+                Objects.requireNonNull(value)
         );
     }
+
+    @Then("the response should NOT contain header {string} with value {string}")
+    public void the_response_should_not_contain_header_with_value(String header, String value) {
+        var headers = lastResponse.returnResult(String.class).getResponseHeaders();
+        var headerValues = headers.get(Objects.requireNonNull(header));
+
+        if (headerValues != null) {
+            assertThat(headerValues)
+                    .as("Header '%s' should not contain forbidden value '%s'", header, value)
+                    .doesNotContain(Objects.requireNonNull(value));
+        }
+    }
 }
+

@@ -7,6 +7,8 @@ import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.security.Principal;
@@ -27,15 +29,25 @@ public class GatewayRoutesConfig {
 
     @Bean
     public KeyResolver smartKeyResolver() {
-        return exchange -> exchange.getPrincipal()
-            .map(Principal::getName)
-            .switchIfEmpty(Mono.defer(() -> {
-                var remoteAddress = exchange.getRequest().getRemoteAddress();
-                String ip = (remoteAddress != null && remoteAddress.getAddress() != null)
-                        ? remoteAddress.getAddress().getHostAddress()
-                        : "anonymous";
-                return Mono.just(ip);
-            }));
+        return exchange -> {
+            // Check for Bearer token BEFORE calling getPrincipal().
+            // getPrincipal() can trigger JWT validation against the JWK endpoint,
+            // which fails for anonymous users if Keycloak is unreachable → 500.
+            String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                return exchange.getPrincipal()
+                        .map(Principal::getName)
+                        .onErrorResume(e -> Mono.just(fallbackKey(exchange)));
+            }
+            return Mono.just(fallbackKey(exchange));
+        };
+    }
+
+    private String fallbackKey(ServerWebExchange exchange) {
+        var remoteAddress = exchange.getRequest().getRemoteAddress();
+        return (remoteAddress != null && remoteAddress.getAddress() != null)
+                ? remoteAddress.getAddress().getHostAddress()
+                : "anonymous";
     }
 
     @Bean
