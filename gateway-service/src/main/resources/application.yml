@@ -12,9 +12,6 @@ spring:
         multiplier: 1.5
         max-attempts: 15
 
-server:
-  port: 8080
-
 eureka:
   client:
     serviceUrl:
