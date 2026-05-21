@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: truthlens-gateway-test
+  cloud:
+    config:
+      enabled: false
+  main:
+    web-application-type: reactive
+  # Disable JWT validation startup check.
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: "http://localhost:9999/realms/test/protocol/openid-connect/certs"
+
+eureka:
+  client:
+    enabled: false
+
+spring.cloud.discovery.client.simple.instances:
+  truthlens-backend:
+    - uri: "http://localhost:9998"
+
+truthlens:
+  gateway:
+    cors:
+      allowed-origins: "http://localhost:3000"
+    rate-limit:
+      replenish-rate: 1
+      burst-capacity: 2
