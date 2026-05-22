@@ -150,6 +150,19 @@ services:
     depends_on:
       - backend
 
+  ocr-service:
+    build:
+      context: ./ocr-service
+    container_name: truthlens-ocr-service
+    restart: on-failure
+    env_file:
+      - ./ocr-service/.env
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    depends_on:
+      - config-server
+      - discovery-server
+
 volumes:
   keycloak-data:
     name: backend_keycloak-data
