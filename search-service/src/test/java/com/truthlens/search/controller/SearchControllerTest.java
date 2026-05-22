@@ -83,6 +83,20 @@ class SearchControllerTest {
     }
 
     @Test
+    @DisplayName("POST /api/internal/v1/search:execute - should handle null queries list in logging gracefully")
+    void shouldHandleNullQueries() throws Exception {
+        when(webSearchService.executeSearch(any(SearchExecutionRequest.class)))
+                .thenReturn(new SearchExecutionResponse(List.of()));
+
+        var requestBody = new SearchExecutionRequest(null, 3);
+
+        mockMvc.perform(post("/api/internal/v1/search:execute")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestBody)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     @DisplayName("POST /api/internal/v1/search:execute — should return 400 on bad request")
     void shouldReturn400OnBadRequest() throws Exception {
         when(webSearchService.executeSearch(any(SearchExecutionRequest.class)))

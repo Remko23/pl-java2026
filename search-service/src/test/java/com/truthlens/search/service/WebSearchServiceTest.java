@@ -51,7 +51,11 @@ class WebSearchServiceTest {
         webSearchService = new WebSearchService(duckDuckGoRestClient, wikipediaRestClient);
         lenient().when(duckDuckGoRestClient.get()).thenReturn((RestClient.RequestHeadersUriSpec) requestHeadersUriSpec);
         lenient().when(wikipediaRestClient.get()).thenReturn((RestClient.RequestHeadersUriSpec) requestHeadersUriSpec);
-        lenient().when(requestHeadersUriSpec.uri(any(Function.class))).thenReturn((RestClient.RequestHeadersSpec) requestHeadersSpec);
+        lenient().when(requestHeadersUriSpec.uri(any(Function.class))).thenAnswer(invocation -> {
+            Function<org.springframework.web.util.UriBuilder, java.net.URI> function = invocation.getArgument(0);
+            function.apply(new org.springframework.web.util.DefaultUriBuilderFactory().builder());
+            return requestHeadersSpec;
+        });
         lenient().when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
     }
 
