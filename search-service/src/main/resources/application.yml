@@ -16,7 +16,7 @@ spring:
       enabled: true
 
 server:
-  port: 0  # Random port — Eureka handles discovery
+  port: 8080
 
 eureka:
   client:

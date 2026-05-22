@@ -69,4 +69,11 @@ nbbuild/
 .DS_Store
 Thumbs.db
 
+# ==========================================
+# SonarQube / JaCoCo
+# ==========================================
+.sonar/
+**/.sonar/
+**/jacoco.exec
+
 .agent/

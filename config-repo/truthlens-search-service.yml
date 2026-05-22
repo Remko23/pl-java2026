@@ -1,0 +1,12 @@
+spring:
+  threads:
+    virtual:
+      enabled: true
+
+duckduckgo:
+  api-url: "https://api.duckduckgo.com"
+
+retry:
+  max-attempts: 3
+  initial-delay: 1000
+  multiplier: 2.0

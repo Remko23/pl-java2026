@@ -1,8 +1,14 @@
 package com.truthlens.search.model;
 
-// TODO: Define as Java Record per AI_DEVELOPMENT_GUIDELINES.md §2.1
-// Contract from DECISION_LOG_API.md §4.3:
-//   { "queries": ["..."], "maxResultsPerQuery": 3 }
+import java.util.List;
 
-public record SearchExecutionRequest() {
+/**
+ * Request DTO for executing a web search.
+ * Contract from DECISION_LOG_API.md §4.3:
+ *   { "queries": ["..."], "maxResultsPerQuery": 3 }
+ */
+public record SearchExecutionRequest(
+        List<String> queries,
+        int maxResultsPerQuery
+) {
 }
