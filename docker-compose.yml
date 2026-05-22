@@ -98,7 +98,7 @@ services:
     container_name: truthlens-backend
     restart: on-failure
     ports:
-      - "8081:8080"
+      - "8083:8080"
     env_file:
       - ./backend/.env
     extra_hosts:
