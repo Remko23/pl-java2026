@@ -20,7 +20,7 @@ spring:
       max-request-size: 10MB
 
 server:
-  port: 0  # Random port — Eureka handles discovery
+  port: 8082  # Random port — Eureka handles discovery
 
 gemini:
   api:
