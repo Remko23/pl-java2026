@@ -4,5 +4,8 @@ package com.truthlens.ocr.model;
 // Contract from DECISION_LOG_API.md §4.4:
 //   { "extractedText": "...", "hasManipulationArtifacts": false, "confidenceScore": 98.5 }
 
-public record OcrExtractionResponse() {
-}
+public record OcrExtractionResponse(
+        String extractedText,
+        boolean hasManipulationArtifacts,
+        double confidenceScore
+) {}

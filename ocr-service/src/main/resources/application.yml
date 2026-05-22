@@ -22,6 +22,10 @@ spring:
 server:
   port: 0  # Random port — Eureka handles discovery
 
+gemini:
+  api:
+    key: ${GEMINI_API_KEY:}
+
 eureka:
   client:
     serviceUrl:
