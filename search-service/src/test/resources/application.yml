@@ -1,0 +1,16 @@
+# Tests configuration
+spring:
+  application:
+    name: truthlens-search-service
+  config:
+    import: "optional:configserver:"
+  cloud:
+    config:
+      enabled: false
+      fail-fast: false
+    discovery:
+      enabled: false
+
+eureka:
+  client:
+    enabled: false

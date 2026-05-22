@@ -110,6 +110,17 @@ services:
       - discovery-server
       - redis
 
+  search-service:
+    build:
+      context: ./search-service
+    container_name: truthlens-search-service
+    restart: on-failure
+    ports:
+      - "8082:8080"
+    depends_on:
+      - config-server
+      - discovery-server
+
   gateway:
     build:
       context: ./gateway-service

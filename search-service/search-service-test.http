@@ -1,0 +1,52 @@
+### Test 1: Pojedyncze zapytanie
+POST http://localhost:8082/api/internal/v1/search:execute
+Content-Type: application/json
+Connection: close
+
+{
+  "queries": [
+    "covid-19 vaccine microchip"
+  ],
+  "maxResultsPerQuery": 3
+}
+
+###
+
+### Test 2: Zapytanie o konkretny fakt
+POST http://localhost:8082/api/internal/v1/search:execute
+Content-Type: application/json
+Connection: close
+
+{
+  "queries": [
+    "who is bill gates"
+  ],
+  "maxResultsPerQuery": 2
+}
+
+###
+
+### Test 3: Wiele zapytań naraz
+POST http://localhost:8082/api/internal/v1/search:execute
+Content-Type: application/json
+Connection: close
+
+{
+  "queries": [
+    "moon landing hoax",
+    "apollo 11 moon landing facts"
+  ],
+  "maxResultsPerQuery": 2
+}
+
+###
+
+### Test 4: Błędne zapytanie
+POST http://localhost:8082/api/internal/v1/search:execute
+Content-Type: application/json
+Connection: close
+
+{
+  "queries": [],
+  "maxResultsPerQuery": 3
+}
