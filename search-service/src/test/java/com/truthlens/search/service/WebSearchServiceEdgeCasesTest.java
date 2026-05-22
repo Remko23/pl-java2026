@@ -83,7 +83,6 @@ class WebSearchServiceEdgeCasesTest {
                 ))
         );
         when(responseSpec.body(WikipediaApiResponse.class)).thenReturn(response);
-        // Let DDG fail or return null
         when(responseSpec.body(com.truthlens.search.model.DuckDuckGoApiResponse.class)).thenReturn(null);
 
         SearchExecutionRequest request = new SearchExecutionRequest(List.of("query"), 3);
@@ -162,25 +161,21 @@ class WebSearchServiceEdgeCasesTest {
             return requestHeadersSpec;
         });
         lenient().when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
-        
-        // Let DDG fail or return null
+
         when(responseSpec.body(com.truthlens.search.model.DuckDuckGoApiResponse.class)).thenReturn(null);
-        
-        // 1. response is not null, query is null
+
         WikipediaApiResponse responseNoQuery = new WikipediaApiResponse(null);
         when(responseSpec.body(WikipediaApiResponse.class)).thenReturn(responseNoQuery);
         var res1 = webSearchService.executeSearch(new SearchExecutionRequest(List.of("query"), 3)).results();
         assertThat(res1).hasSize(1);
         assertThat(res1.get(0).title()).isEqualTo("Search Results on DuckDuckGo");
 
-        // 2. query is not null, search is null
         WikipediaApiResponse responseNoSearch = new WikipediaApiResponse(new WikipediaApiResponse.Query(null));
         when(responseSpec.body(WikipediaApiResponse.class)).thenReturn(responseNoSearch);
         var res2 = webSearchService.executeSearch(new SearchExecutionRequest(List.of("query"), 3)).results();
         assertThat(res2).hasSize(1);
         assertThat(res2.get(0).title()).isEqualTo("Search Results on DuckDuckGo");
 
-        // 3. snippet is null
         WikipediaApiResponse responseNullSnippet = new WikipediaApiResponse(new WikipediaApiResponse.Query(List.of(
                 new WikipediaApiResponse.SearchItem("Title", null)
         )));
@@ -188,7 +183,6 @@ class WebSearchServiceEdgeCasesTest {
         var res = webSearchService.executeSearch(new SearchExecutionRequest(List.of("query"), 3)).results();
         assertThat(res.get(0).snippet()).isEmpty();
 
-        // 4. break condition inside Wikipedia search
         WikipediaApiResponse responseBreak = new WikipediaApiResponse(new WikipediaApiResponse.Query(List.of(
                 new WikipediaApiResponse.SearchItem("Title1", "snippet1"),
                 new WikipediaApiResponse.SearchItem("Title2", "snippet2")
@@ -211,7 +205,7 @@ class WebSearchServiceEdgeCasesTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    void testDuckDuckGoBranchCoverage_Blank() {
+    void testDuckDuckGoBlank() {
         setupMockClients();
         com.truthlens.search.model.DuckDuckGoApiResponse ddgBlank = new com.truthlens.search.model.DuckDuckGoApiResponse(
                 null, "", null, null, "heading", "", null, "", null, null, null
@@ -225,7 +219,7 @@ class WebSearchServiceEdgeCasesTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    void testDuckDuckGoBranchCoverage_Topics() {
+    void testDuckDuckGoTopics() {
         setupMockClients();
         com.truthlens.search.model.DuckDuckGoApiResponse.RelatedTopic blankTopic = 
                 new com.truthlens.search.model.DuckDuckGoApiResponse.RelatedTopic(null, "url", null, null, null);
@@ -247,7 +241,7 @@ class WebSearchServiceEdgeCasesTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    void testDuckDuckGoBranchCoverage_TopicsBreak() {
+    void testDuckDuckGoTopicsBreak() {
         setupMockClients();
         com.truthlens.search.model.DuckDuckGoApiResponse.RelatedTopic valid1 = 
                 new com.truthlens.search.model.DuckDuckGoApiResponse.RelatedTopic("t1", "u1", null, null, null);
@@ -266,7 +260,7 @@ class WebSearchServiceEdgeCasesTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    void testDuckDuckGoBranchCoverage_NestedBreak() {
+    void testDuckDuckGoNestedBreak() {
         setupMockClients();
         com.truthlens.search.model.DuckDuckGoApiResponse.RelatedTopic valid1 = 
                 new com.truthlens.search.model.DuckDuckGoApiResponse.RelatedTopic("t1", "u1", null, null, null);
