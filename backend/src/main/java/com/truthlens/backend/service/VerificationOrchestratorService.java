@@ -30,11 +30,11 @@ public class VerificationOrchestratorService {
     private final ExecutorService virtualThreadExecutor;
 
     public VerificationOrchestratorService(VerificationStateService stateService,
-                                           GroqLlmService groqLlmService,
-                                           JuryVotingService juryVotingService,
-                                           SearchServiceClient searchServiceClient,
-                                           OcrServiceClient ocrServiceClient,
-                                           ObjectMapper objectMapper) {
+            GroqLlmService groqLlmService,
+            JuryVotingService juryVotingService,
+            SearchServiceClient searchServiceClient,
+            OcrServiceClient ocrServiceClient,
+            ObjectMapper objectMapper) {
         this.stateService = stateService;
         this.groqLlmService = groqLlmService;
         this.juryVotingService = juryVotingService;
@@ -46,66 +46,88 @@ public class VerificationOrchestratorService {
 
     public VerificationResponse startVerification(String text) {
         String verificationId = UUID.randomUUID().toString();
-        stateService.updateState(verificationId, VerificationStatus.QUEUED, 0, "Weryfikacja została zakolejkowana.", null);
+        stateService.updateState(verificationId, VerificationStatus.QUEUED, 0, "Weryfikacja została zakolejkowana.",
+                null);
 
         virtualThreadExecutor.submit(() -> processVerification(verificationId, text));
 
-        return new VerificationResponse(verificationId, VerificationStatus.QUEUED, 0, "Weryfikacja została zakolejkowana.", null);
+        return new VerificationResponse(verificationId, VerificationStatus.QUEUED, 0,
+                "Weryfikacja została zakolejkowana.", null);
     }
 
     public VerificationResponse startVerification(MultipartFile image) {
         String verificationId = UUID.randomUUID().toString();
-        stateService.updateState(verificationId, VerificationStatus.QUEUED, 0, "Weryfikacja została zakolejkowana.", null);
+        stateService.updateState(verificationId, VerificationStatus.QUEUED, 0, "Weryfikacja została zakolejkowana.",
+                null);
 
         virtualThreadExecutor.submit(() -> {
             try {
                 stateService.updateState(verificationId, VerificationStatus.OCR_PROCESSING, 10);
                 OcrExtractionResponse ocrResponse = ocrServiceClient.extractText(image);
-                
+
                 if (ocrResponse.extractedText() == null || ocrResponse.extractedText().isBlank()) {
                     throw new RuntimeException("Nie udało się odczytać tekstu z obrazu.");
                 }
-                
+
                 processVerification(verificationId, ocrResponse.extractedText());
             } catch (Exception e) {
                 log.error("Failed to process image for verification {}", verificationId, e);
-                stateService.updateState(verificationId, VerificationStatus.FAILED, 0, "Błąd przetwarzania obrazu: " + e.getMessage(), null);
+                stateService.updateState(verificationId, VerificationStatus.FAILED, 0,
+                        "Błąd przetwarzania obrazu: " + e.getMessage(), null);
             }
         });
 
-        return new VerificationResponse(verificationId, VerificationStatus.QUEUED, 0, "Weryfikacja została zakolejkowana.", null);
+        return new VerificationResponse(verificationId, VerificationStatus.QUEUED, 0,
+                "Weryfikacja została zakolejkowana.", null);
     }
 
     private void processVerification(String verificationId, String text) {
         try {
-            // GENERATING_QUERIES
             stateService.updateState(verificationId, VerificationStatus.GENERATING_QUERIES, 30);
-            String prompt = "Wygeneruj 3 optymalne zapytania do wyszukiwarki internetowej, aby zweryfikować prawdziwość tego tekstu. Zwróć wyłączenie zserializowaną tablicę JSON stringów i nic więcej (bez formatowania Markdown). Tekst: " + text;
+            String prompt = "Wygeneruj 3 optymalne zapytania do wyszukiwarki internetowej, aby zweryfikować prawdziwość tego tekstu. Zwróć wyłączenie zserializowaną tablicę JSON stringów i nic więcej (bez formatowania Markdown). Tekst: "
+                    + text;
             String rawQueries = groqLlmService.askModel("llama-3.1-8b-instant", prompt);
-            
-            // Clean markdown block if necessary
+
             rawQueries = rawQueries.replaceAll("```json", "").replaceAll("```", "").trim();
-            String[] queriesArray = objectMapper.readValue(rawQueries, String[].class);
-            List<String> queries = Arrays.asList(queriesArray);
-            
-            // SEARCHING_WEB
+            com.fasterxml.jackson.databind.JsonNode rootNode = objectMapper.readTree(rawQueries);
+            List<String> queries = new java.util.ArrayList<>();
+            if (rootNode.isArray()) {
+                for (com.fasterxml.jackson.databind.JsonNode node : rootNode) {
+                    queries.add(parseQueryNode(node));
+                }
+            } else if (rootNode.isObject()) {
+                java.util.Iterator<com.fasterxml.jackson.databind.JsonNode> elements = rootNode.elements();
+                while (elements.hasNext()) {
+                    com.fasterxml.jackson.databind.JsonNode node = elements.next();
+                    if (node.isArray()) {
+                        for (com.fasterxml.jackson.databind.JsonNode el : node) {
+                            queries.add(parseQueryNode(el));
+                        }
+                        break;
+                    }
+                }
+            }
+            queries.removeIf(String::isBlank);
+            if (queries.isEmpty()) {
+                queries.add(text); // Fallback w razie pustego wyniku
+            }
+
             stateService.updateState(verificationId, VerificationStatus.SEARCHING_WEB, 50);
-            SearchExecutionResponse searchResponse = searchServiceClient.executeSearch(new SearchExecutionRequest(queries, 3));
-            
+            SearchExecutionResponse searchResponse = searchServiceClient
+                    .executeSearch(new SearchExecutionRequest(queries, 3));
+
             String searchEvidence = searchResponse.results().stream()
                     .map(r -> r.title() + " (" + r.url() + "):\n" + r.snippet())
                     .collect(Collectors.joining("\n\n"));
 
-            // AI_JURY_VOTING
             stateService.updateState(verificationId, VerificationStatus.AI_JURY_VOTING, 70);
             List<ModelVoteResult> votes = juryVotingService.gatherVotes(text, searchEvidence);
-            
-            // COMPLETED
+
             double avgConfidence = votes.stream().mapToInt(ModelVoteResult::confidenceScore).average().orElse(0.0);
             String aggregatedReasoning = votes.stream()
                     .map(v -> v.modelName() + ": " + v.reasoning())
                     .collect(Collectors.joining("\n"));
-                    
+
             long trueVotes = votes.stream().filter(v -> {
                 try {
                     return Integer.parseInt(v.verdict()) > 50;
@@ -114,13 +136,35 @@ public class VerificationOrchestratorService {
                 }
             }).count();
             String finalVerdict = (trueVotes >= 2) ? "TRUE" : "FALSE";
-            
+
             JuryReport report = new JuryReport(finalVerdict, avgConfidence, aggregatedReasoning);
-            stateService.updateState(verificationId, VerificationStatus.COMPLETED, 100, "Weryfikacja zakończona sukcesem.", report);
-            
+            stateService.updateState(verificationId, VerificationStatus.COMPLETED, 100,
+                    "Weryfikacja zakończona sukcesem.", report);
+
         } catch (Exception e) {
             log.error("Failed to process verification {}", verificationId, e);
-            stateService.updateState(verificationId, VerificationStatus.FAILED, 0, "Wystąpił błąd podczas weryfikacji: " + e.getMessage(), null);
+            stateService.updateState(verificationId, VerificationStatus.FAILED, 0,
+                    "Wystąpił błąd podczas weryfikacji: " + e.getMessage(), null);
         }
+    }
+
+    private String parseQueryNode(com.fasterxml.jackson.databind.JsonNode el) {
+        if (el.isObject()) {
+            if (el.has("query")) return el.get("query").asText();
+            if (el.has("q")) return el.get("q").asText();
+            if (el.has("zapytanie")) return el.get("zapytanie").asText();
+        } else if (el.isTextual()) {
+            String text = el.asText().trim();
+            if (text.startsWith("{")) {
+                try {
+                    com.fasterxml.jackson.databind.JsonNode nested = objectMapper.readTree(text);
+                    if (nested.has("query")) return nested.get("query").asText();
+                    if (nested.has("q")) return nested.get("q").asText();
+                    if (nested.has("zapytanie")) return nested.get("zapytanie").asText();
+                } catch (Exception ignored) {}
+            }
+            return text;
+        }
+        return el.asText();
     }
 }
