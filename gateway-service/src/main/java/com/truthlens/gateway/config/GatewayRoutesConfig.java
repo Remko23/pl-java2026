@@ -58,6 +58,10 @@ public class GatewayRoutesConfig {
                 .path("/api/v1/verifications/**")
                 .filters(f -> f.requestRateLimiter(c -> c.setRateLimiter(redisRateLimiter).setKeyResolver(smartKeyResolver)))
                 .uri("lb://truthlens-backend"))
+            // Backend Health Route
+            .route("backend_health_route", r -> r
+                .path("/api/v1/health")
+                .uri("lb://truthlens-backend"))
             // Keycloak Auth Route (Keycloak is not in Eureka, routing directly via Docker host)
             .route("keycloak_auth_route", r -> r
                 .path("/api/auth/**")

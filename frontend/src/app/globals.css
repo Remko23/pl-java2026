@@ -259,3 +259,28 @@ h1, h2, h3 {
   box-shadow: 0 0 15px rgba(188, 19, 254, 0.2);
   background: rgba(255, 255, 255, 0.05);
 }
+
+@keyframes pulse-glow {
+  0% { 
+    box-shadow: 0 0 10px rgba(188, 19, 254, 0.4); 
+    border-color: rgba(188, 19, 254, 0.5);
+  }
+  50% { 
+    box-shadow: 0 0 30px rgba(188, 19, 254, 0.9), 0 0 10px rgba(188, 19, 254, 0.5) inset; 
+    border-color: rgba(188, 19, 254, 1);
+  }
+  100% { 
+    box-shadow: 0 0 10px rgba(188, 19, 254, 0.4); 
+    border-color: rgba(188, 19, 254, 0.5);
+  }
+}
+
+.glow-active {
+  animation: pulse-glow 2s infinite ease-in-out;
+}
+
+@keyframes pulse-glow-red {
+  0% { box-shadow: 0 0 5px #ff0000; opacity: 1; }
+  50% { box-shadow: 0 0 20px #ff0000; opacity: 0.4; }
+  100% { box-shadow: 0 0 5px #ff0000; opacity: 1; }
+}

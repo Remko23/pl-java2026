@@ -46,18 +46,18 @@ public class VerificationOrchestratorService {
 
     public VerificationResponse startVerification(String text) {
         String verificationId = UUID.randomUUID().toString();
-        stateService.updateState(verificationId, VerificationStatus.QUEUED, 0, "Weryfikacja została zakolejkowana.",
+        stateService.updateState(verificationId, VerificationStatus.QUEUED, 0, "Verification in progress...",
                 null);
 
         virtualThreadExecutor.submit(() -> processVerification(verificationId, text));
 
         return new VerificationResponse(verificationId, VerificationStatus.QUEUED, 0,
-                "Weryfikacja została zakolejkowana.", null);
+                "Verification in progress...", null);
     }
 
     public VerificationResponse startVerification(MultipartFile image) {
         String verificationId = UUID.randomUUID().toString();
-        stateService.updateState(verificationId, VerificationStatus.QUEUED, 0, "Weryfikacja została zakolejkowana.",
+        stateService.updateState(verificationId, VerificationStatus.QUEUED, 0, "Verification in progress...",
                 null);
 
         byte[] imageBytes;
@@ -72,7 +72,8 @@ public class VerificationOrchestratorService {
         virtualThreadExecutor.submit(() -> {
             try {
                 stateService.updateState(verificationId, VerificationStatus.OCR_PROCESSING, 10);
-                org.springframework.core.io.Resource resource = new org.springframework.core.io.ByteArrayResource(imageBytes) {
+                org.springframework.core.io.Resource resource = new org.springframework.core.io.ByteArrayResource(
+                        imageBytes) {
                     @Override
                     public String getFilename() {
                         return originalFilename != null ? originalFilename : "image.png";
@@ -81,19 +82,19 @@ public class VerificationOrchestratorService {
                 OcrExtractionResponse ocrResponse = ocrServiceClient.extractText(resource);
 
                 if (ocrResponse.extractedText() == null || ocrResponse.extractedText().isBlank()) {
-                    throw new RuntimeException("Nie udało się odczytać tekstu z obrazu.");
+                    throw new RuntimeException("Failed to read text from image.");
                 }
 
                 processVerification(verificationId, ocrResponse.extractedText());
             } catch (Exception e) {
                 log.error("Failed to process image for verification {}", verificationId, e);
                 stateService.updateState(verificationId, VerificationStatus.FAILED, 0,
-                        "Błąd przetwarzania obrazu: " + e.getMessage(), null);
+                        "Image processing error: " + e.getMessage(), null);
             }
         });
 
         return new VerificationResponse(verificationId, VerificationStatus.QUEUED, 0,
-                "Weryfikacja została zakolejkowana.", null);
+                "Verification in progress...", null);
     }
 
     private void processVerification(String verificationId, String text) {
@@ -154,29 +155,36 @@ public class VerificationOrchestratorService {
 
             JuryReport report = new JuryReport(finalVerdict, avgConfidence, aggregatedReasoning);
             stateService.updateState(verificationId, VerificationStatus.COMPLETED, 100,
-                    "Weryfikacja zakończona sukcesem.", report);
+                    "Verification completed successfully.", report);
 
         } catch (Exception e) {
             log.error("Failed to process verification {}", verificationId, e);
             stateService.updateState(verificationId, VerificationStatus.FAILED, 0,
-                    "Wystąpił błąd podczas weryfikacji: " + e.getMessage(), null);
+                    "An error occurred during verification: " + e.getMessage(), null);
         }
     }
 
     private String parseQueryNode(com.fasterxml.jackson.databind.JsonNode el) {
         if (el.isObject()) {
-            if (el.has("query")) return el.get("query").asText();
-            if (el.has("q")) return el.get("q").asText();
-            if (el.has("zapytanie")) return el.get("zapytanie").asText();
+            if (el.has("query"))
+                return el.get("query").asText();
+            if (el.has("q"))
+                return el.get("q").asText();
+            if (el.has("zapytanie"))
+                return el.get("zapytanie").asText();
         } else if (el.isTextual()) {
             String text = el.asText().trim();
             if (text.startsWith("{")) {
                 try {
                     com.fasterxml.jackson.databind.JsonNode nested = objectMapper.readTree(text);
-                    if (nested.has("query")) return nested.get("query").asText();
-                    if (nested.has("q")) return nested.get("q").asText();
-                    if (nested.has("zapytanie")) return nested.get("zapytanie").asText();
-                } catch (Exception ignored) {}
+                    if (nested.has("query"))
+                        return nested.get("query").asText();
+                    if (nested.has("q"))
+                        return nested.get("q").asText();
+                    if (nested.has("zapytanie"))
+                        return nested.get("zapytanie").asText();
+                } catch (Exception ignored) {
+                }
             }
             return text;
         }
