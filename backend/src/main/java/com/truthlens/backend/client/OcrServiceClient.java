@@ -1,10 +1,13 @@
 package com.truthlens.backend.client;
 
-// TODO: Implement as Spring HTTP Interface per AI_DEVELOPMENT_GUIDELINES.md §2.3
-// Uses @PostExchange to call ocr-service via Eureka load balancing.
-// Contract from DECISION_LOG_API.md §4.4:
-//   POST /api/internal/v1/ocr:extract (multipart/form-data)
-// Must be registered as a bean backed by RestClient + Eureka.
+import com.truthlens.backend.model.OcrExtractionResponse;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.service.annotation.PostExchange;
 
 public interface OcrServiceClient {
+    
+    @PostExchange(url = "/api/internal/v1/ocr:extract", contentType = MediaType.MULTIPART_FORM_DATA_VALUE)
+    OcrExtractionResponse extractText(@RequestPart("image") MultipartFile image);
 }

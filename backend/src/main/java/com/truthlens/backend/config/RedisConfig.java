@@ -1,11 +1,23 @@
 package com.truthlens.backend.config;
 
-// TODO: Implement Redis connection and RedisTemplate configuration.
-// Responsibilities:
-//   - Configure RedisConnectionFactory (Lettuce)
-//   - Configure RedisTemplate<String, Object> with JSON serialization
-//   - Set default TTL for verification state keys (e.g. 15 minutes)
-// Redis is used ONLY as ephemeral state store — no persistence requirements.
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+@Configuration
 public class RedisConfig {
+
+    @Bean
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory);
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        template.setHashKeySerializer(new StringRedisSerializer());
+        template.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
+        return template;
+    }
 }

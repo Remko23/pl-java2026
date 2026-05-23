@@ -33,7 +33,6 @@ services:
       KC_DB_PASSWORD: password
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-      # Start in dev mode for local testing
       KC_HOSTNAME_STRICT: "false"
       KC_HTTP_ENABLED: "true"
       KC_THEME_WELCOME_CACHE: "false"
@@ -65,7 +64,6 @@ services:
     ports:
       - "6379:6379"
 
-  # ── SonarQube (Static Code Analysis) ─────────────────────────────
   sonarqube:
     image: sonarqube:10-community
     container_name: truthlens-sonarqube
