@@ -155,8 +155,6 @@ services:
     restart: on-failure
     env_file:
       - ./ocr-service/.env
-    environment:
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
     depends_on:
       - config-server
       - discovery-server

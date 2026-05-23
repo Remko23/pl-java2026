@@ -60,10 +60,25 @@ public class VerificationOrchestratorService {
         stateService.updateState(verificationId, VerificationStatus.QUEUED, 0, "Weryfikacja została zakolejkowana.",
                 null);
 
+        byte[] imageBytes;
+        String originalFilename;
+        try {
+            imageBytes = image.getBytes();
+            originalFilename = image.getOriginalFilename();
+        } catch (java.io.IOException e) {
+            throw new RuntimeException("Failed to read image bytes", e);
+        }
+
         virtualThreadExecutor.submit(() -> {
             try {
                 stateService.updateState(verificationId, VerificationStatus.OCR_PROCESSING, 10);
-                OcrExtractionResponse ocrResponse = ocrServiceClient.extractText(image);
+                org.springframework.core.io.Resource resource = new org.springframework.core.io.ByteArrayResource(imageBytes) {
+                    @Override
+                    public String getFilename() {
+                        return originalFilename != null ? originalFilename : "image.png";
+                    }
+                };
+                OcrExtractionResponse ocrResponse = ocrServiceClient.extractText(resource);
 
                 if (ocrResponse.extractedText() == null || ocrResponse.extractedText().isBlank()) {
                     throw new RuntimeException("Nie udało się odczytać tekstu z obrazu.");

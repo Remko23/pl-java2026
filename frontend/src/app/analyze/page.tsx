@@ -232,7 +232,7 @@ export default function AnalyzePage() {
             </div>
 
             <div style={{ marginTop: '2rem', textAlign: 'center' }}>
-               <button onClick={() => { setStatus('IDLE'); setResult(null); setTextInput(''); setSelectedFile(null); }} style={{ padding: '0.8rem 2rem', background: 'transparent', border: '1px solid #b026ff', color: '#b026ff', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Verify Another</button>
+               <button onClick={() => { setStatus('IDLE'); setResult(null); setTextInput(''); setSelectedFile(null); setVerificationId(null); }} style={{ padding: '0.8rem 2rem', background: 'transparent', border: '1px solid #b026ff', color: '#b026ff', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Verify Another</button>
             </div>
           </div>
         )}

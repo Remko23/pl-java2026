@@ -88,7 +88,7 @@ class VerificationOrchestratorServiceTest {
                 eq(100), anyString(), any(JuryReport.class));
 
         verify(stateService).updateState(eq(response.verificationId()), eq(VerificationStatus.OCR_PROCESSING), eq(10));
-        verify(ocrServiceClient).extractText(file);
+        verify(ocrServiceClient).extractText(any());
     }
 
     @Test
