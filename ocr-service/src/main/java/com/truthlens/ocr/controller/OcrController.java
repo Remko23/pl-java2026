@@ -1,11 +1,23 @@
 package com.truthlens.ocr.controller;
 
-// TODO: Implement the internal OCR endpoint.
-// Contract from DECISION_LOG_API.md §4.4:
-//   POST /api/internal/v1/ocr:extract
-//   Request:  multipart/form-data with field "image" (binary)
-//   Response: OcrExtractionResponse (extractedText, hasManipulationArtifacts, confidenceScore)
-// This controller is NOT exposed through the API Gateway.
+import com.truthlens.ocr.model.OcrExtractionResponse;
+import com.truthlens.ocr.service.VisionExtractionService;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+@RestController
 public class OcrController {
+
+    private final VisionExtractionService visionExtractionService;
+
+    public OcrController(VisionExtractionService visionExtractionService) {
+        this.visionExtractionService = visionExtractionService;
+    }
+
+    @PostMapping("/api/internal/v1/ocr:extract")
+    public OcrExtractionResponse extract(@RequestParam("image") MultipartFile image) {
+        return visionExtractionService.extractText(image);
+    }
 }
