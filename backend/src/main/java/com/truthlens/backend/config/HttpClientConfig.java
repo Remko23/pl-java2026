@@ -1,11 +1,36 @@
 package com.truthlens.backend.config;
 
-// TODO: Implement Spring HTTP Interface client bean factory.
-// Responsibilities:
-//   - Create RestClient beans backed by Eureka load balancing
-//   - Register SearchServiceClient proxy via HttpServiceProxyFactory
-//   - Register OcrServiceClient proxy via HttpServiceProxyFactory
-// Per AI_DEVELOPMENT_GUIDELINES.md §2.3: use Spring HTTP Interfaces, NOT Feign/RestTemplate.
+import com.truthlens.backend.client.OcrServiceClient;
+import com.truthlens.backend.client.SearchServiceClient;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.support.RestClientAdapter;
+import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
+@Configuration
 public class HttpClientConfig {
+
+    @Bean
+    @LoadBalanced
+    public RestClient.Builder loadBalancedRestClientBuilder() {
+        return RestClient.builder();
+    }
+
+    @Bean
+    public SearchServiceClient searchServiceClient(RestClient.Builder builder) {
+        RestClient restClient = builder.baseUrl("http://truthlens-search-service").build();
+        RestClientAdapter adapter = RestClientAdapter.create(restClient);
+        HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
+        return factory.createClient(SearchServiceClient.class);
+    }
+
+    @Bean
+    public OcrServiceClient ocrServiceClient(RestClient.Builder builder) {
+        RestClient restClient = builder.baseUrl("http://truthlens-ocr-service").build();
+        RestClientAdapter adapter = RestClientAdapter.create(restClient);
+        HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
+        return factory.createClient(OcrServiceClient.class);
+    }
 }

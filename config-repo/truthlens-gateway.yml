@@ -2,6 +2,8 @@ server:
   port: 8080
 
 spring:
+  codec:
+    max-in-memory-size: 10MB
   data:
     redis:
       host: ${REDIS_HOST:truthlens-redis}
@@ -13,11 +15,10 @@ spring:
           issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8080/realms/truthlens}
           jwk-set-uri: ${KEYCLOAK_JWKS_URI:http://truthlens-keycloak:8080/realms/truthlens/protocol/openid-connect/certs}
 
-# Custom properties for CORS and Rate Limiting
 truthlens:
   gateway:
     cors:
       allowed-origins: "http://localhost:3000"
     rate-limit:
-      replenish-rate: 5 # req per second
-      burst-capacity: 10 # burst size
+      replenish-rate: 5 
+      burst-capacity: 10

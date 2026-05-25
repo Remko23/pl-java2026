@@ -23,18 +23,13 @@ public class GatewaySecurityConfig {
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         http
-            .csrf(ServerHttpSecurity.CsrfSpec::disable)
-            .authorizeExchange(exchanges -> exchanges
-                // Allow auth requests to Keycloak
-                .pathMatchers("/api/auth/**").permitAll()
-                // Allow health checks
-                .pathMatchers("/actuator/health").permitAll()
-                // Allow verifications without token for guests (will parse if token is present)
-                .pathMatchers("/api/v1/verifications/**").permitAll()
-                // Require auth for anything else just in case
-                .anyExchange().authenticated()
-            )
-            .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .authorizeExchange(exchanges -> exchanges
+                        .pathMatchers("/api/auth/**").permitAll()
+                        .pathMatchers("/actuator/health", "/api/v1/health").permitAll()
+                        .pathMatchers("/api/v1/verifications/**").permitAll()
+                        .anyExchange().authenticated())
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
         return http.build();
     }
 
