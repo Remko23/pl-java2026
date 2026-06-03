@@ -53,10 +53,19 @@ public class GatewayRoutesConfig {
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder, RedisRateLimiter redisRateLimiter, KeyResolver smartKeyResolver) {
         return builder.routes()
-            // Backend Verifications Route with Rate Limiting
+            // Backend Verifications Route with Rate Limiting and Token Relay
             .route("backend_verifications_route", r -> r
                 .path("/api/v1/verifications/**")
-                .filters(f -> f.requestRateLimiter(c -> c.setRateLimiter(redisRateLimiter).setKeyResolver(smartKeyResolver)))
+                .filters(f -> f
+                    .tokenRelay()
+                    .requestRateLimiter(c -> c.setRateLimiter(redisRateLimiter).setKeyResolver(smartKeyResolver)))
+                .uri("lb://truthlens-backend"))
+            // Backend History Route with Token Relay and Rate Limiting
+            .route("backend_history_route", r -> r
+                .path("/api/v1/history/**")
+                .filters(f -> f
+                    .tokenRelay()
+                    .requestRateLimiter(c -> c.setRateLimiter(redisRateLimiter).setKeyResolver(smartKeyResolver)))
                 .uri("lb://truthlens-backend"))
             // Backend Health Route
             .route("backend_health_route", r -> r
