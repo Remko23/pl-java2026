@@ -27,6 +27,7 @@ public class VerificationOrchestratorService {
     private final SearchServiceClient searchServiceClient;
     private final OcrServiceClient ocrServiceClient;
     private final ObjectMapper objectMapper;
+    private final VerificationHistoryService historyService;
     private final ExecutorService virtualThreadExecutor;
 
     public VerificationOrchestratorService(VerificationStateService stateService,
@@ -34,28 +35,30 @@ public class VerificationOrchestratorService {
             JuryVotingService juryVotingService,
             SearchServiceClient searchServiceClient,
             OcrServiceClient ocrServiceClient,
-            ObjectMapper objectMapper) {
+            ObjectMapper objectMapper,
+            VerificationHistoryService historyService) {
         this.stateService = stateService;
         this.groqLlmService = groqLlmService;
         this.juryVotingService = juryVotingService;
         this.searchServiceClient = searchServiceClient;
         this.ocrServiceClient = ocrServiceClient;
         this.objectMapper = objectMapper;
+        this.historyService = historyService;
         this.virtualThreadExecutor = Executors.newVirtualThreadPerTaskExecutor();
     }
 
-    public VerificationResponse startVerification(String text) {
+    public VerificationResponse startVerification(String text, String userId) {
         String verificationId = UUID.randomUUID().toString();
         stateService.updateState(verificationId, VerificationStatus.QUEUED, 0, "Verification in progress...",
                 null);
 
-        virtualThreadExecutor.submit(() -> processVerification(verificationId, text));
+        virtualThreadExecutor.submit(() -> processVerification(verificationId, text, userId, "TEXT", null));
 
         return new VerificationResponse(verificationId, VerificationStatus.QUEUED, 0,
                 "Verification in progress...", null);
     }
 
-    public VerificationResponse startVerification(MultipartFile image) {
+    public VerificationResponse startVerification(MultipartFile image, String userId) {
         String verificationId = UUID.randomUUID().toString();
         stateService.updateState(verificationId, VerificationStatus.QUEUED, 0, "Verification in progress...",
                 null);
@@ -85,7 +88,7 @@ public class VerificationOrchestratorService {
                     throw new RuntimeException("Failed to read text from image.");
                 }
 
-                processVerification(verificationId, ocrResponse.extractedText());
+                processVerification(verificationId, ocrResponse.extractedText(), userId, "IMAGE", originalFilename);
             } catch (Exception e) {
                 log.error("Failed to process image for verification {}", verificationId, e);
                 stateService.updateState(verificationId, VerificationStatus.FAILED, 0,
@@ -97,7 +100,7 @@ public class VerificationOrchestratorService {
                 "Verification in progress...", null);
     }
 
-    private void processVerification(String verificationId, String text) {
+    private void processVerification(String verificationId, String text, String userId, String inputType, String fileName) {
         try {
             stateService.updateState(verificationId, VerificationStatus.GENERATING_QUERIES, 30);
             String prompt = "Wygeneruj 3 optymalne zapytania do wyszukiwarki internetowej, aby zweryfikować prawdziwość tego tekstu. Zwróć wyłączenie zserializowaną tablicę JSON stringów i nic więcej (bez formatowania Markdown). Tekst: "
@@ -156,6 +159,11 @@ public class VerificationOrchestratorService {
             JuryReport report = new JuryReport(finalVerdict, avgConfidence, aggregatedReasoning);
             stateService.updateState(verificationId, VerificationStatus.COMPLETED, 100,
                     "Verification completed successfully.", report);
+
+            // Save to history (only successful verifications for logged-in users)
+            if (userId != null && !userId.isBlank()) {
+                historyService.saveHistory(userId, inputType, text, fileName, report);
+            }
 
         } catch (Exception e) {
             log.error("Failed to process verification {}", verificationId, e);

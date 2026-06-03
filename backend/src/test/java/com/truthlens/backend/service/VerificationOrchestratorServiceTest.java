@@ -30,6 +30,8 @@ class VerificationOrchestratorServiceTest {
     private SearchServiceClient searchServiceClient;
     @Mock
     private OcrServiceClient ocrServiceClient;
+    @Mock
+    private VerificationHistoryService historyService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -38,12 +40,13 @@ class VerificationOrchestratorServiceTest {
     @BeforeEach
     void setUp() {
         orchestratorService = new VerificationOrchestratorService(
-                stateService, groqLlmService, juryVotingService, searchServiceClient, ocrServiceClient, objectMapper);
+                stateService, groqLlmService, juryVotingService, searchServiceClient, ocrServiceClient, objectMapper, historyService);
     }
 
     @Test
     void startVerification_withText_shouldProcessSuccessfully() throws Exception {
         String claimText = "Bill Gates adds chips to vaccines";
+        String userId = "test-user-id";
 
         when(groqLlmService.askModel(anyString(), anyString()))
                 .thenReturn("[\"vaccine chips fact check\", \"bill gates vaccines\"]");
@@ -52,7 +55,7 @@ class VerificationOrchestratorServiceTest {
         when(juryVotingService.gatherVotes(anyString(), anyString())).thenReturn(List.of(
                 new ModelVoteResult("Llama3", "FALSE", 99, "It is a conspiracy theory.")));
 
-        VerificationResponse response = orchestratorService.startVerification(claimText);
+        VerificationResponse response = orchestratorService.startVerification(claimText, userId);
 
         assertThat(response).isNotNull();
         assertThat(response.status()).isEqualTo(VerificationStatus.QUEUED);
@@ -66,12 +69,14 @@ class VerificationOrchestratorServiceTest {
                 eq(30));
         verify(stateService).updateState(eq(response.verificationId()), eq(VerificationStatus.SEARCHING_WEB), eq(50));
         verify(stateService).updateState(eq(response.verificationId()), eq(VerificationStatus.AI_JURY_VOTING), eq(70));
+        verify(historyService, timeout(2000)).saveHistory(eq(userId), eq("TEXT"), eq(claimText), isNull(), any(JuryReport.class));
     }
 
     @Test
     void startVerification_withImage_shouldProcessSuccessfully() throws Exception {
         MockMultipartFile file = new MockMultipartFile("file", "test.png", "image/png", "fake-image".getBytes());
         String extractedText = "Text extracted from image";
+        String userId = "test-user-id";
 
         when(ocrServiceClient.extractText(any())).thenReturn(new OcrExtractionResponse(extractedText, false, 95.0));
         when(groqLlmService.askModel(anyString(), anyString())).thenReturn("[\"extracted text check\"]");
@@ -79,7 +84,7 @@ class VerificationOrchestratorServiceTest {
         when(juryVotingService.gatherVotes(anyString(), anyString())).thenReturn(List.of(
                 new ModelVoteResult("Llama3", "TRUE", 80, "Seems true.")));
 
-        VerificationResponse response = orchestratorService.startVerification(file);
+        VerificationResponse response = orchestratorService.startVerification(file, userId);
 
         assertThat(response).isNotNull();
         assertThat(response.status()).isEqualTo(VerificationStatus.QUEUED);
@@ -89,14 +94,16 @@ class VerificationOrchestratorServiceTest {
 
         verify(stateService).updateState(eq(response.verificationId()), eq(VerificationStatus.OCR_PROCESSING), eq(10));
         verify(ocrServiceClient).extractText(any());
+        verify(historyService, timeout(2000)).saveHistory(eq(userId), eq("IMAGE"), eq(extractedText), eq("test.png"), any(JuryReport.class));
     }
 
     @Test
     void startVerification_withText_shouldHandleFailure() {
         String claimText = "Error causing text";
+        String userId = "test-user-id";
         when(groqLlmService.askModel(anyString(), anyString())).thenThrow(new RuntimeException("LLM API is down"));
 
-        VerificationResponse response = orchestratorService.startVerification(claimText);
+        VerificationResponse response = orchestratorService.startVerification(claimText, userId);
         verify(stateService, timeout(2000)).updateState(eq(response.verificationId()), eq(VerificationStatus.FAILED),
                 eq(0), contains("LLM API is down"), isNull());
     }

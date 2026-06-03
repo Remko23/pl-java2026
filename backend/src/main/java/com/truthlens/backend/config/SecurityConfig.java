@@ -21,7 +21,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.disable())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/api/public/**", "/actuator/health", "/api/v1/verifications/**", "/api/v1/health").permitAll()
+                        .requestMatchers("/api/public/**", "/actuator/health", "/api/v1/health", "/api/v1/verifications/**").permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> {
                 }));
