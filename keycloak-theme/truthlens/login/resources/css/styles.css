@@ -193,3 +193,50 @@ body {
 input[type="checkbox"] {
   accent-color: var(--neon-purple) !important;
 }
+
+/* Feedback / Alert messages */
+#kc-feedback,
+.alert,
+.pf-c-alert {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-radius: 12px !important;
+  padding: 14px 18px !important;
+  margin-bottom: 1.5rem !important;
+  border: 1px solid var(--glass-border) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+/* Error / Danger Alert */
+.alert-error,
+.pf-m-danger,
+.pf-c-alert.pf-m-danger {
+  border-color: #ff3333 !important;
+  background: rgba(255, 51, 51, 0.08) !important;
+  box-shadow: 0 0 15px rgba(255, 51, 51, 0.15) !important;
+}
+
+.alert-error .kc-feedback-text,
+.pf-c-alert__title,
+.pf-c-alert__description,
+.kc-feedback-text {
+  color: #ff5555 !important;
+  font-weight: 600 !important;
+  font-size: 0.9rem !important;
+}
+
+/* Success Alert */
+.alert-success,
+.pf-m-success,
+.pf-c-alert.pf-m-success {
+  border-color: #00e676 !important;
+  background: rgba(0, 230, 118, 0.08) !important;
+  box-shadow: 0 0 15px rgba(0, 230, 118, 0.15) !important;
+}
+
+.alert-success .kc-feedback-text {
+  color: #00e676 !important;
+  font-weight: 600 !important;
+  font-size: 0.9rem !important;
+}
