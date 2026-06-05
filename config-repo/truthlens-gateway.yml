@@ -12,7 +12,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8080/realms/truthlens}
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8081/realms/truthlens}
           jwk-set-uri: ${KEYCLOAK_JWKS_URI:http://truthlens-keycloak:8080/realms/truthlens/protocol/openid-connect/certs}
 
 truthlens:
@@ -22,3 +22,8 @@ truthlens:
     rate-limit:
       replenish-rate: 5 
       burst-capacity: 10
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.cloud.gateway: DEBUG

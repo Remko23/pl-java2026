@@ -3,6 +3,8 @@ spring:
     redis:
       host: ${REDIS_HOST:truthlens-redis}
       port: ${REDIS_PORT:6379}
+    mongodb:
+      uri: mongodb://truthlens_app:truthlens_mongo_pass@${MONGO_HOST:truthlens-mongodb}:27017/truthlens_history?authSource=truthlens_history
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
@@ -21,7 +23,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${KEYCLOAK_ISSUER_URI}
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8081/realms/truthlens}
+          jwk-set-uri: ${KEYCLOAK_JWKS_URI:http://truthlens-keycloak:8080/realms/truthlens/protocol/openid-connect/certs}
 
   threads:
     virtual:
