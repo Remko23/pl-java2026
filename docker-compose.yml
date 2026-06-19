@@ -110,6 +110,7 @@ services:
     ports:
       - "8083:8080"
     env_file:
+      - ./.env
       - ./backend/.env
     extra_hosts:
       - "localhost:host-gateway"
@@ -171,6 +172,7 @@ services:
     container_name: truthlens-ocr-service
     restart: on-failure
     env_file:
+      - ./.env
       - ./ocr-service/.env
     depends_on:
       - config-server
