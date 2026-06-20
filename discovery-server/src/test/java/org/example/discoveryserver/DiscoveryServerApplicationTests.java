@@ -10,4 +10,8 @@ class DiscoveryServerApplicationTests {
     void contextLoads() {
     }
 
+    @Test
+    void mainMethodLoads() {
+        DiscoveryServerApplication.main(new String[] {"--server.port=0"});
+    }
 }
