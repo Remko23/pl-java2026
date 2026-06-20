@@ -10,4 +10,8 @@ class ConfigServerApplicationTests {
     void contextLoads() {
     }
 
+    @Test
+    void mainMethodLoads() {
+        ConfigServerApplication.main(new String[] {"--server.port=0"});
+    }
 }
