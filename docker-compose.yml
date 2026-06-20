@@ -171,6 +171,8 @@ services:
       context: ./ocr-service
     container_name: truthlens-ocr-service
     restart: on-failure
+    ports:
+      - "8085:8080"
     env_file:
       - ./.env
       - ./ocr-service/.env

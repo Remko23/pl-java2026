@@ -30,9 +30,6 @@ public class GatewayRoutesConfig {
     @Bean
     public KeyResolver smartKeyResolver() {
         return exchange -> {
-            // Check for Bearer token BEFORE calling getPrincipal().
-            // getPrincipal() can trigger JWT validation against the JWK endpoint,
-            // which fails for anonymous users if Keycloak is unreachable → 500.
             String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
                 return exchange.getPrincipal()
@@ -51,31 +48,59 @@ public class GatewayRoutesConfig {
     }
 
     @Bean
-    public RouteLocator customRouteLocator(RouteLocatorBuilder builder, RedisRateLimiter redisRateLimiter, KeyResolver smartKeyResolver) {
+    public RouteLocator customRouteLocator(RouteLocatorBuilder builder, RedisRateLimiter redisRateLimiter,
+            KeyResolver smartKeyResolver) {
         return builder.routes()
-            // Backend Verifications Route with Rate Limiting and Token Relay
-            .route("backend_verifications_route", r -> r
-                .path("/api/v1/verifications/**")
-                .filters(f -> f
-                    .tokenRelay()
-                    .requestRateLimiter(c -> c.setRateLimiter(redisRateLimiter).setKeyResolver(smartKeyResolver)))
-                .uri("lb://truthlens-backend"))
-            // Backend History Route with Token Relay and Rate Limiting
-            .route("backend_history_route", r -> r
-                .path("/api/v1/history/**")
-                .filters(f -> f
-                    .tokenRelay()
-                    .requestRateLimiter(c -> c.setRateLimiter(redisRateLimiter).setKeyResolver(smartKeyResolver)))
-                .uri("lb://truthlens-backend"))
-            // Backend Health Route
-            .route("backend_health_route", r -> r
-                .path("/api/v1/health")
-                .uri("lb://truthlens-backend"))
-            // Keycloak Auth Route (Keycloak is not in Eureka, routing directly via Docker host)
-            .route("keycloak_auth_route", r -> r
-                .path("/api/auth/**")
-                .filters(f -> f.rewritePath("/api/auth/?(?<segment>.*)", "/${segment}"))
-                .uri("http://truthlens-keycloak:8080"))
-            .build();
+                // Backend Verifications Route
+                .route("backend_verifications_route", r -> r
+                        .path("/api/v1/verifications/**")
+                        .filters(f -> f
+                                .tokenRelay()
+                                .requestRateLimiter(c -> c.setRateLimiter(redisRateLimiter).setKeyResolver(smartKeyResolver)))
+                        .uri("lb://truthlens-backend"))
+                // Backend History Route
+                .route("backend_history_route", r -> r
+                        .path("/api/v1/history/**")
+                        .filters(f -> f
+                                .tokenRelay()
+                                .requestRateLimiter(c -> c.setRateLimiter(redisRateLimiter).setKeyResolver(smartKeyResolver)))
+                        .uri("lb://truthlens-backend"))
+                // Backend Health Route
+                .route("backend_health_route", r -> r
+                        .path("/api/v1/health")
+                        .uri("lb://truthlens-backend"))
+                // Backend Users Route
+                .route("backend_users_route", r -> r
+                        .path("/api/users/**")
+                        .filters(f -> f
+                                .tokenRelay()
+                                .requestRateLimiter(c -> c.setRateLimiter(redisRateLimiter).setKeyResolver(smartKeyResolver)))
+                        .uri("lb://truthlens-backend"))
+                // Keycloak Auth Route
+                .route("keycloak_auth_route", r -> r
+                        .path("/api/auth/**")
+                        .filters(f -> f.rewritePath("/api/auth/?(?<segment>.*)", "/${segment}"))
+                        .uri("http://truthlens-keycloak:8080"))
+                // Internal routes (exposed temporarily for Swagger UI testing)
+                .route("search_internal_route", r -> r
+                        .path("/api/internal/v1/search**", "/api/internal/v1/search/**")
+                        .uri("lb://truthlens-search-service"))
+                .route("ocr_internal_route", r -> r
+                        .path("/api/internal/v1/ocr**", "/api/internal/v1/ocr/**")
+                        .uri("lb://truthlens-ocr-service"))
+                // OpenAPI
+                .route("openapi_backend", r -> r
+                        .path("/aggregate/backend/v3/api-docs")
+                        .filters(f -> f.rewritePath("/aggregate/backend/(?<segment>.*)", "/${segment}"))
+                        .uri("lb://truthlens-backend"))
+                .route("openapi_ocr", r -> r
+                        .path("/aggregate/ocr/v3/api-docs")
+                        .filters(f -> f.rewritePath("/aggregate/ocr/(?<segment>.*)", "/${segment}"))
+                        .uri("lb://truthlens-ocr-service"))
+                .route("openapi_search", r -> r
+                        .path("/aggregate/search/v3/api-docs")
+                        .filters(f -> f.rewritePath("/aggregate/search/(?<segment>.*)", "/${segment}"))
+                        .uri("lb://truthlens-search-service"))
+                .build();
     }
 }

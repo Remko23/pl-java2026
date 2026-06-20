@@ -27,3 +27,13 @@ logging:
   level:
     org.springframework.security: DEBUG
     org.springframework.cloud.gateway: DEBUG
+
+springdoc:
+  swagger-ui:
+    urls:
+      - name: Backend API
+        url: /aggregate/backend/v3/api-docs
+      - name: OCR API
+        url: /aggregate/ocr/v3/api-docs
+      - name: Search API
+        url: /aggregate/search/v3/api-docs
