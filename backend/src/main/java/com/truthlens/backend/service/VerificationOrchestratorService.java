@@ -100,7 +100,7 @@ public class VerificationOrchestratorService {
                 "Verification in progress...", null);
     }
 
-    private void processVerification(String verificationId, String text, String userId, String inputType, String fileName) {
+    void processVerification(String verificationId, String text, String userId, String inputType, String fileName) {
         try {
             stateService.updateState(verificationId, VerificationStatus.GENERATING_QUERIES, 30);
             String prompt = "Wygeneruj 3 optymalne zapytania do wyszukiwarki internetowej, aby zweryfikować prawdziwość tego tekstu. Zwróć wyłączenie zserializowaną tablicę JSON stringów i nic więcej (bez formatowania Markdown). Tekst: "
@@ -172,7 +172,7 @@ public class VerificationOrchestratorService {
         }
     }
 
-    private String parseQueryNode(com.fasterxml.jackson.databind.JsonNode el) {
+    String parseQueryNode(com.fasterxml.jackson.databind.JsonNode el) {
         if (el.isObject()) {
             if (el.has("query"))
                 return el.get("query").asText();

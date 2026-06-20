@@ -34,7 +34,7 @@ export default async function DashboardPage() {
         />
         <GlassTile
           title="History"
-          description="View history of your previous analyses and their results. (soon)"
+          description="View history of your previous analyses and their results."
           icon="📚"
           color="orange"
           href="/history"
