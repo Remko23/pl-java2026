@@ -180,11 +180,11 @@ export default function AnalyzeClient({ token }: AnalyzeClientProps) {
       <div className="glass" style={{ padding: '2rem' }}>
 
         {status === 'COMPLETED' && result && (
-          <div style={{ marginBottom: '3rem', padding: '2rem', borderRadius: '12px', background: 'rgba(0,0,0,0.3)', border: result.finalVerdict === 'TRUE' ? '1px solid #00ff00' : '1px solid #ff0000' }}>
-            <h2 style={{ textAlign: 'center', fontSize: '2.5rem', color: result.finalVerdict === 'TRUE' ? '#00ff00' : '#ff0000', marginBottom: '1rem' }}>
-              {result.finalVerdict === 'TRUE' ? 'TRUE / FACT' : 'FALSE / FAKE NEWS'}
+          <div style={{ marginBottom: '3rem', padding: '2rem', borderRadius: '12px', background: 'rgba(0,0,0,0.3)', border: result.averageConfidence < 50 ? '1px solid #888888' : result.finalVerdict === 'TRUE' ? '1px solid #00ff00' : '1px solid #ff0000' }}>
+            <h2 style={{ textAlign: 'center', fontSize: '2.5rem', color: result.averageConfidence < 50 ? '#888888' : result.finalVerdict === 'TRUE' ? '#00ff00' : '#ff0000', marginBottom: '1rem' }}>
+              {result.averageConfidence < 50 ? 'INCONCLUSIVE' : result.finalVerdict === 'TRUE' ? 'TRUE / FACT' : 'FALSE / FAKE NEWS'}
             </h2>
-            <div style={{ textAlign: 'center', marginBottom: '2rem', fontSize: '1.2rem' }}>
+            <div style={{ textAlign: 'center', marginBottom: '2rem', fontSize: '1.2rem', color: result.averageConfidence < 50 ? '#aaaaaa' : 'inherit' }}>
               Confidence Score: <strong>{result.averageConfidence.toFixed(1)}%</strong>
             </div>
 
@@ -199,6 +199,11 @@ export default function AnalyzeClient({ token }: AnalyzeClientProps) {
 
             {isReasoningExpanded && (
               <div style={{ marginTop: '1.5rem', whiteSpace: 'pre-wrap', textAlign: 'left', lineHeight: 1.6, opacity: 0.9, padding: '1.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }}>
+                {result.averageConfidence < 50 && (
+                  <div style={{ marginBottom: '1.5rem', padding: '1rem', background: 'rgba(136, 136, 136, 0.1)', borderLeft: '4px solid #888888', color: '#cccccc' }}>
+                    <strong>Notice:</strong> The models voted for <strong>{result.finalVerdict === 'TRUE' ? 'TRUE' : 'FALSE'}</strong>, but they are not confident enough to make a definitive decision.
+                  </div>
+                )}
                 {result.aggregatedReasoning.split('\n').map((line, idx) => {
                   const colonIdx = line.indexOf(':');
                   if (colonIdx !== -1) {

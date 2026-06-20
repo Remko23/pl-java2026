@@ -139,8 +139,8 @@ export default function HistoryClient({ token }: HistoryClientProps) {
         </Link>
 
         {historyPage && historyPage.totalElements > 0 && (
-          <button 
-            onClick={handleSortToggle} 
+          <button
+            onClick={handleSortToggle}
             className="glass"
             style={{
               padding: '0.6rem 1.2rem',
@@ -179,7 +179,7 @@ export default function HistoryClient({ token }: HistoryClientProps) {
         }}>
           <h3 style={{ color: '#ff4d4d', fontSize: '1.4rem', marginBottom: '0.8rem' }}>Failed to Load History</h3>
           <p style={{ opacity: 0.8, marginBottom: '1.5rem' }}>{error}</p>
-          <button 
+          <button
             onClick={() => fetchHistory(currentPage, sortDirection)}
             className="glass neon-border-orange text-neon-orange"
             style={{ padding: '0.6rem 1.5rem', cursor: 'pointer', fontWeight: 600 }}
@@ -211,16 +211,20 @@ export default function HistoryClient({ token }: HistoryClientProps) {
             {historyPage.content.map((item) => {
               const isExpanded = !!expandedItems[item.id];
               const isImage = item.inputType === 'IMAGE';
-              
+
               return (
                 <div key={item.id} className="glass" style={{
                   padding: '1.8rem',
-                  border: item.finalVerdict === 'TRUE' 
-                    ? '1px solid rgba(0, 255, 0, 0.15)' 
-                    : '1px solid rgba(255, 0, 0, 0.15)',
-                  boxShadow: item.finalVerdict === 'TRUE'
-                    ? '0 0 20px rgba(0, 255, 0, 0.03)'
-                    : '0 0 20px rgba(255, 0, 0, 0.03)',
+                  border: item.averageConfidence < 50
+                    ? '1px solid rgba(136, 136, 136, 0.3)'
+                    : item.finalVerdict === 'TRUE'
+                      ? '1px solid rgba(0, 255, 0, 0.15)'
+                      : '1px solid rgba(255, 0, 0, 0.15)',
+                  boxShadow: item.averageConfidence < 50
+                    ? '0 0 20px rgba(136, 136, 136, 0.05)'
+                    : item.finalVerdict === 'TRUE'
+                      ? '0 0 20px rgba(0, 255, 0, 0.03)'
+                      : '0 0 20px rgba(255, 0, 0, 0.03)',
                   transition: 'all 0.3s ease'
                 }}>
                   {/* Card Header */}
@@ -267,12 +271,12 @@ export default function HistoryClient({ token }: HistoryClientProps) {
                         <div style={{
                           fontWeight: 800,
                           fontSize: '1.25rem',
-                          color: item.finalVerdict === 'TRUE' ? '#00ff00' : '#ff4d4d',
-                          textShadow: item.finalVerdict === 'TRUE' ? '0 0 10px rgba(0, 255, 0, 0.3)' : '0 0 10px rgba(255, 77, 77, 0.3)'
+                          color: item.averageConfidence < 50 ? '#888888' : item.finalVerdict === 'TRUE' ? '#00ff00' : '#ff4d4d',
+                          textShadow: item.averageConfidence < 50 ? '0 0 10px rgba(136, 136, 136, 0.3)' : item.finalVerdict === 'TRUE' ? '0 0 10px rgba(0, 255, 0, 0.3)' : '0 0 10px rgba(255, 77, 77, 0.3)'
                         }}>
-                          {item.finalVerdict === 'TRUE' ? 'TRUE' : 'FALSE'}
+                          {item.averageConfidence < 50 ? 'INCONCLUSIVE' : item.finalVerdict === 'TRUE' ? 'TRUE' : 'FALSE'}
                         </div>
-                        <div style={{ fontSize: '0.8rem', opacity: 0.6 }}>
+                        <div style={{ fontSize: '0.8rem', opacity: 0.6, color: item.averageConfidence < 50 ? '#aaaaaa' : 'inherit' }}>
                           Confidence: {item.averageConfidence.toFixed(1)}%
                         </div>
                       </div>
@@ -360,6 +364,11 @@ export default function HistoryClient({ token }: HistoryClientProps) {
                       paddingTop: '1.2rem',
                       animation: 'fadeIn 0.3s ease'
                     }}>
+                      {item.averageConfidence < 50 && (
+                        <div style={{ marginBottom: '1.2rem', padding: '1rem', background: 'rgba(136, 136, 136, 0.1)', borderLeft: '4px solid #888888', color: '#cccccc', fontSize: '0.95rem' }}>
+                          <strong>Notice:</strong> The models voted for <strong>{item.finalVerdict === 'TRUE' ? 'TRUE' : 'FALSE'}</strong>, but they are not confident enough to make a definitive decision.
+                        </div>
+                      )}
                       <h4 style={{
                         fontSize: '1rem',
                         marginBottom: '0.8rem',
