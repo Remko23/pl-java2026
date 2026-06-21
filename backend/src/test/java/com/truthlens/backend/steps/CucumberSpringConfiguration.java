@@ -26,22 +26,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
-/**
- * Cucumber-Spring glue configuration.
- * <p>
- * Boots the full Spring context with MockMvc available for REST assertions.
- * External infrastructure (Config Server, Eureka, MongoDB, PostgreSQL)
- * is disabled via properties so tests run without Docker or network access.
- * <p>
- * Redis is replaced by an in-memory {@link ConcurrentHashMap}-backed mock
- * so that {@code VerificationStateService} can store and retrieve state
- * throughout the async verification flow without a real Redis instance.
- * <p>
- * All {@code @MockBean} annotations must live on this class (the
- * {@code @CucumberContextConfiguration} class) because cucumber-spring
- * uses this class — not the step definition classes — when bootstrapping
- * the Spring Test context.
- */
 @CucumberContextConfiguration
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -69,39 +53,24 @@ import static org.mockito.Mockito.when;
 @Import(CucumberSpringConfiguration.InMemoryRedisConfig.class)
 public class CucumberSpringConfiguration {
 
-    // ─── MockBeans must be declared HERE (on the @CucumberContextConfiguration class) ───
-
-    /** Keycloak JWT decoder — mocked so no real Keycloak instance is needed. */
     @MockBean
     JwtDecoder jwtDecoder;
 
-    /** OCR microservice client — not used in text-only flow, mocked to satisfy DI. */
     @MockBean
     OcrServiceClient ocrServiceClient;
 
-    /** Search microservice client — stubbed to return contradicting web results. */
     @MockBean
     SearchServiceClient searchServiceClient;
 
-    /** Groq LLM API client — stubbed to return AI jury vote JSON responses. */
     @MockBean
     GroqApiClient groqApiClient;
 
-    /** MongoDB history repository — mocked to avoid needing a real database. */
     @MockBean
     VerificationHistoryRepository historyRepository;
 
-    /** JPA user repository — mocked to avoid needing a real database. */
     @MockBean
     com.truthlens.backend.repository.UserRepository userRepository;
 
-    /**
-     * Provides an in-memory {@link RedisTemplate} mock that backs its
-     * {@link ValueOperations} with a {@link ConcurrentHashMap}.
-     * <p>
-     * This allows {@code VerificationStateService} to work with real logic
-     * (set/get keys) without needing a running Redis server.
-     */
     @TestConfiguration
     static class InMemoryRedisConfig {
 
@@ -116,7 +85,6 @@ public class CucumberSpringConfiguration {
 
             when(mockTemplate.opsForValue()).thenReturn(mockValueOps);
 
-            // set(key, value, ttl) → store in ConcurrentHashMap
             doAnswer(invocation -> {
                 String key = invocation.getArgument(0);
                 Object value = invocation.getArgument(1);
@@ -124,7 +92,6 @@ public class CucumberSpringConfiguration {
                 return null;
             }).when(mockValueOps).set(anyString(), any(), any(Duration.class));
 
-            // set(key, value) → store in ConcurrentHashMap
             doAnswer(invocation -> {
                 String key = invocation.getArgument(0);
                 Object value = invocation.getArgument(1);
@@ -132,7 +99,6 @@ public class CucumberSpringConfiguration {
                 return null;
             }).when(mockValueOps).set(anyString(), any());
 
-            // get(key) → retrieve from ConcurrentHashMap
             when(mockValueOps.get(anyString())).thenAnswer(invocation -> {
                 String key = invocation.getArgument(0);
                 return store.get(key);
