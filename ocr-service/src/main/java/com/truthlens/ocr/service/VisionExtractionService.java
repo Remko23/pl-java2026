@@ -97,7 +97,6 @@ public class VisionExtractionService {
         try {
             OcrExtractionResponse extracted = objectMapper.readValue(rawJson, OcrExtractionResponse.class);
 
-            // Walidacja braku tekstu w odpowiedzi
             if (extracted.extractedText() == null || extracted.extractedText().trim().isEmpty()) {
                 throw new IllegalArgumentException("Z przesłanego obrazu nie da się odczytać żadnego tekstu.");
             }

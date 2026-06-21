@@ -29,7 +29,6 @@ public class UserController {
         String firstName = jwt.getClaimAsString("given_name");
         String lastName = jwt.getClaimAsString("family_name");
 
-        // Find or create user based on Keycloak JWT
         Optional<User> optionalUser = userRepository.findByKeycloakId(keycloakId);
         
         User user = optionalUser.orElseGet(() -> {

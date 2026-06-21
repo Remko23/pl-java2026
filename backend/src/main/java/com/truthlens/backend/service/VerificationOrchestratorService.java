@@ -128,7 +128,7 @@ public class VerificationOrchestratorService {
             }
             queries.removeIf(String::isBlank);
             if (queries.isEmpty()) {
-                queries.add(text); // Fallback w razie pustego wyniku
+                queries.add(text);
             }
 
             stateService.updateState(verificationId, VerificationStatus.SEARCHING_WEB, 50);
@@ -160,7 +160,6 @@ public class VerificationOrchestratorService {
             stateService.updateState(verificationId, VerificationStatus.COMPLETED, 100,
                     "Verification completed successfully.", report);
 
-            // Save to history (only successful verifications for logged-in users)
             if (userId != null && !userId.isBlank()) {
                 historyService.saveHistory(userId, inputType, text, fileName, report);
             }

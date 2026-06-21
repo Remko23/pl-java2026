@@ -103,7 +103,6 @@ class ConfigCoverageTest {
                 .remoteAddress(new InetSocketAddress("10.0.0.1", 8080))
                 .build();
         
-        // Mock throwing error when resolving principal
         ServerWebExchangeMock exchange = new ServerWebExchangeMock(request);
 
         Mono<String> keyMono = smartKeyResolver.resolve(exchange.getExchange());
@@ -131,7 +130,6 @@ class ConfigCoverageTest {
         assertThat(corsConfigurationSource).isNotNull();
     }
     
-    // Helper class to mock getting principal with an error
     private static class ServerWebExchangeMock {
         private final MockServerWebExchange exchange;
         

@@ -114,7 +114,7 @@ export default function HistoryClient({ token }: HistoryClientProps) {
         </p>
       </header>
 
-      {/* Control bar */}
+      
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
@@ -227,7 +227,7 @@ export default function HistoryClient({ token }: HistoryClientProps) {
                       : '0 0 20px rgba(255, 0, 0, 0.03)',
                   transition: 'all 0.3s ease'
                 }}>
-                  {/* Card Header */}
+                  
                   <div style={{
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -265,7 +265,7 @@ export default function HistoryClient({ token }: HistoryClientProps) {
                       </span>
                     </div>
 
-                    {/* Verdict and Confidence */}
+                    
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem' }}>
                       <div style={{ textAlign: 'right' }}>
                         <div style={{
@@ -283,7 +283,7 @@ export default function HistoryClient({ token }: HistoryClientProps) {
                     </div>
                   </div>
 
-                  {/* Input Text Content */}
+                  
                   <div style={{ marginBottom: '1.5rem' }}>
                     <p style={{
                       fontSize: '1rem',
@@ -313,7 +313,7 @@ export default function HistoryClient({ token }: HistoryClientProps) {
                     </p>
                   </div>
 
-                  {/* Footer Actions */}
+                  
                   <div style={{
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -356,7 +356,7 @@ export default function HistoryClient({ token }: HistoryClientProps) {
                     )}
                   </div>
 
-                  {/* Expanded Jury Reasoning Panel */}
+                  
                   {isExpanded && (
                     <div style={{
                       marginTop: '1.5rem',
@@ -418,7 +418,7 @@ export default function HistoryClient({ token }: HistoryClientProps) {
             })}
           </div>
 
-          {/* Pagination Controls */}
+          
           {historyPage.totalPages > 1 && (
             <div style={{
               display: 'flex',
@@ -470,7 +470,7 @@ export default function HistoryClient({ token }: HistoryClientProps) {
         </>
       )}
 
-      {/* Extra keyframe for loading pulse animation */}
+      
       <style jsx global>{`
         @keyframes pulse {
           0%, 100% { opacity: 0.4; }

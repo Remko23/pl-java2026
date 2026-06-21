@@ -95,7 +95,6 @@ class WebSearchServiceTest {
             assertThat(response.results()).isNotEmpty();
             assertThat(response.results()).hasSizeGreaterThanOrEqualTo(1);
 
-            // First result should be the abstract
             SearchResultItem first = response.results().get(0);
             assertThat(first.title()).isEqualTo("Test Topic");
             assertThat(first.url()).isEqualTo("https://en.wikipedia.org/wiki/Test");
@@ -121,7 +120,6 @@ class WebSearchServiceTest {
 
             SearchExecutionResponse response = webSearchService.executeSearch(request);
 
-            // Both queries return the same URL, should be deduplicated
             long distinctUrls = response.results().stream()
                     .map(SearchResultItem::url)
                     .distinct()
@@ -360,11 +358,10 @@ class WebSearchServiceTest {
             SearchExecutionResponse response = webSearchService.executeSearch(request);
 
             assertThat(response.results()).hasSize(4);
-            // Verify priority order
-            assertThat(response.results().get(0).title()).isEqualTo("Topic Heading");       // abstract
-            assertThat(response.results().get(1).title()).isEqualTo("Direct Answer");        // answer
-            assertThat(response.results().get(2).title()).isEqualTo("Oxford Dictionary");    // definition
-            assertThat(response.results().get(3).url()).isEqualTo("https://example.com/related"); // topic
+            assertThat(response.results().get(0).title()).isEqualTo("Topic Heading");
+            assertThat(response.results().get(1).title()).isEqualTo("Direct Answer");
+            assertThat(response.results().get(2).title()).isEqualTo("Oxford Dictionary");
+            assertThat(response.results().get(3).url()).isEqualTo("https://example.com/related");
         }
 
         @Test
@@ -385,7 +382,6 @@ class WebSearchServiceTest {
 
             when(responseSpec.body(DuckDuckGoApiResponse.class)).thenReturn(apiResponse);
 
-            // maxResultsPerQuery = 0 → powinno zostać zamienione na domyślne 3
             var request = new SearchExecutionRequest(List.of("query"), 0);
             SearchExecutionResponse response = webSearchService.executeSearch(request);
 
@@ -425,7 +421,6 @@ class WebSearchServiceTest {
 
             SearchExecutionResponse response = webSearchService.executeSearch(request);
 
-            // Powinny być 2 wyniki — po jednym z każdego zapytania (różne URL)
             assertThat(response.results()).hasSize(2);
             assertThat(response.results().get(0).title()).isEqualTo("First Topic");
             assertThat(response.results().get(1).title()).isEqualTo("Second Topic");
@@ -457,14 +452,13 @@ class WebSearchServiceTest {
             SearchExecutionResponse response = webSearchService.executeSearch(request);
 
             assertThat(response.results()).hasSize(1);
-            // Tytuł powinien być wyciągnięty z tekstu przed " - "
             assertThat(response.results().get(0).title()).isEqualTo("Climate Change");
         }
 
         @Test
         @DisplayName("should truncate very long text without separator to 60 chars")
         void shouldTruncateLongTextWithoutSeparator() {
-            String longText = "A".repeat(100); // 100 znaków bez " - "
+            String longText = "A".repeat(100);
 
             var apiResponse = new DuckDuckGoApiResponse(
                     null, null, null, null, null,
@@ -484,8 +478,7 @@ class WebSearchServiceTest {
             SearchExecutionResponse response = webSearchService.executeSearch(request);
 
             assertThat(response.results()).hasSize(1);
-            // Tytuł powinien mieć max 60 znaków + "..."
-            assertThat(response.results().get(0).title()).hasSize(63); // 60 + "..."
+            assertThat(response.results().get(0).title()).hasSize(63);
             assertThat(response.results().get(0).title()).endsWith("...");
         }
     }

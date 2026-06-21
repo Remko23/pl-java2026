@@ -149,8 +149,6 @@ class VisionExtractionServiceTest {
         GeminiResponse geminiResponse = createMockGeminiResponse(jsonResponse);
         when(responseSpec.body(GeminiResponse.class)).thenReturn(geminiResponse);
 
-        // Without content-type, it will fallback to image/jpeg if it skips validateImage
-        // Actually, our validateImage throws if contentType == null
         assertThatThrownBy(() -> visionExtractionService.extractText(file))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("obs");
