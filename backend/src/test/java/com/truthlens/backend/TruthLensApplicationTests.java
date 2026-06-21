@@ -6,7 +6,6 @@ class TruthLensApplicationTests {
 
     @Test
     void contextLoads() {
-        // Empty test to pass compilation
     }
 
 }

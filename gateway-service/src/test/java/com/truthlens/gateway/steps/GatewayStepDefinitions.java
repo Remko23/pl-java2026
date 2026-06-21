@@ -22,25 +22,14 @@ public class GatewayStepDefinitions {
     private WebTestClient.ResponseSpec lastResponse;
     private final List<Integer> collectedStatuses = new ArrayList<>();
 
-    // -------------------------------------------------------------------------
-    // Given steps
-    // -------------------------------------------------------------------------
-
     @Given("an anonymous user")
     public void an_anonymous_user() {
         collectedStatuses.clear();
     }
 
-    /**
-     * In a real integration test we would set the X-Forwarded-For header.
-     * Spring Gateway respects this header when determining the remote address.
-     */
     @Given("an anonymous user with a unique IP {string}")
     public void an_anonymous_user_with_unique_ip(String ip) {
         collectedStatuses.clear();
-        // IP is used in the When step to set the X-Forwarded-For header.
-        // We store it via a thread-local or just use a fixed value: the container
-        // always sees the same loopback — enough to trigger rate limiting.
     }
 
     @Given("a preflight OPTIONS request to {string} from {string}")
@@ -53,10 +42,6 @@ public class GatewayStepDefinitions {
                 .exchange();
     }
 
-    // -------------------------------------------------------------------------
-    // When steps
-    // -------------------------------------------------------------------------
-
     @When("the user sends a GET request to {string}")
     public void the_user_sends_single_request(String path) {
         lastResponse = webTestClient.get()
@@ -64,10 +49,6 @@ public class GatewayStepDefinitions {
                 .exchange();
     }
 
-    /**
-     * Sends requests one at a time and BLOCKS on each response so that
-     * Redis has a chance to count and enforce the rate limit correctly.
-     */
     @When("the user sends {int} sequential requests to {string}")
     public void the_user_sends_sequential_requests(int count, String path) {
         collectedStatuses.clear();
@@ -75,7 +56,7 @@ public class GatewayStepDefinitions {
             int status = webTestClient.get()
                     .uri(Objects.requireNonNull(path))
                     .exchange()
-                    .returnResult(String.class)   // blocks until response arrives
+                    .returnResult(String.class)
                     .getStatus()
                     .value();
             collectedStatuses.add(status);
@@ -84,7 +65,6 @@ public class GatewayStepDefinitions {
 
     @When("the request is processed")
     public void the_request_is_processed() {
-        // HTTP exchange already happened inside the @Given step.
     }
 
     // -------------------------------------------------------------------------
@@ -97,10 +77,6 @@ public class GatewayStepDefinitions {
         assertThat(actualStatus).isNotEqualTo(status);
     }
 
-    /**
-     * Verifies that at least one of the collected responses was 429,
-     * confirming the rate limiter actually triggered.
-     */
     @Then("at least one response should have status {int} Too Many Requests")
     public void at_least_one_response_should_be_429(int expectedStatus) {
         assertThat(collectedStatuses)

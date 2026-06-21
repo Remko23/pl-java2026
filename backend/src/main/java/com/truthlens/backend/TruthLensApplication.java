@@ -10,7 +10,6 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 public class TruthLensApplication {
 
     public static void main(String[] args) {
-        // Load .env.local variables into System properties so Spring Boot can access them
         Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
         dotenv.entries().forEach(entry -> {
             if (System.getProperty(entry.getKey()) == null) {

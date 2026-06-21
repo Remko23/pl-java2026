@@ -51,44 +51,37 @@ public class GatewayRoutesConfig {
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder, RedisRateLimiter redisRateLimiter,
             KeyResolver smartKeyResolver) {
         return builder.routes()
-                // Backend Verifications Route
                 .route("backend_verifications_route", r -> r
                         .path("/api/v1/verifications/**")
                         .filters(f -> f
                                 .tokenRelay()
                                 .requestRateLimiter(c -> c.setRateLimiter(redisRateLimiter).setKeyResolver(smartKeyResolver)))
                         .uri("lb://truthlens-backend"))
-                // Backend History Route
                 .route("backend_history_route", r -> r
                         .path("/api/v1/history/**")
                         .filters(f -> f
                                 .tokenRelay()
                                 .requestRateLimiter(c -> c.setRateLimiter(redisRateLimiter).setKeyResolver(smartKeyResolver)))
                         .uri("lb://truthlens-backend"))
-                // Backend Health Route
                 .route("backend_health_route", r -> r
                         .path("/api/v1/health")
                         .uri("lb://truthlens-backend"))
-                // Backend Users Route
                 .route("backend_users_route", r -> r
                         .path("/api/users/**")
                         .filters(f -> f
                                 .tokenRelay()
                                 .requestRateLimiter(c -> c.setRateLimiter(redisRateLimiter).setKeyResolver(smartKeyResolver)))
                         .uri("lb://truthlens-backend"))
-                // Keycloak Auth Route
                 .route("keycloak_auth_route", r -> r
                         .path("/api/auth/**")
                         .filters(f -> f.rewritePath("/api/auth/?(?<segment>.*)", "/${segment}"))
                         .uri("http://truthlens-keycloak:8080"))
-                // Internal routes (exposed temporarily for Swagger UI testing)
                 .route("search_internal_route", r -> r
                         .path("/api/internal/v1/search**", "/api/internal/v1/search/**")
                         .uri("lb://truthlens-search-service"))
                 .route("ocr_internal_route", r -> r
                         .path("/api/internal/v1/ocr**", "/api/internal/v1/ocr/**")
                         .uri("lb://truthlens-ocr-service"))
-                // OpenAPI
                 .route("openapi_backend", r -> r
                         .path("/aggregate/backend/v3/api-docs")
                         .filters(f -> f.rewritePath("/aggregate/backend/(?<segment>.*)", "/${segment}"))

@@ -89,7 +89,7 @@ class WebSearchServiceEdgeCasesTest {
         var results = webSearchService.executeSearch(request).results();
         assertThat(results).hasSize(1);
         assertThat(results.get(0).title()).isEqualTo("Wiki Title");
-        assertThat(results.get(0).snippet()).isEqualTo("Snippet"); // stripped HTML
+        assertThat(results.get(0).snippet()).isEqualTo("Snippet");
     }
 
     @Test
@@ -99,28 +99,24 @@ class WebSearchServiceEdgeCasesTest {
         lenient().when(requestHeadersUriSpec.uri(any(Function.class))).thenReturn((RestClient.RequestHeadersSpec) requestHeadersSpec);
         lenient().when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
         
-        // 429
         doThrow(HttpClientErrorException.create(HttpStatus.TOO_MANY_REQUESTS, "429", null, null, null))
                 .when(responseSpec).body(WikipediaApiResponse.class);
         assertThatThrownBy(() -> webSearchService.searchWikipedia("query", 3))
                 .isInstanceOf(ExternalSearchException.class)
                 .hasMessageContaining("429");
 
-        // 503
         doThrow(HttpServerErrorException.create(HttpStatus.SERVICE_UNAVAILABLE, "503", null, null, null))
                 .when(responseSpec).body(WikipediaApiResponse.class);
         assertThatThrownBy(() -> webSearchService.searchWikipedia("query", 3))
                 .isInstanceOf(ExternalSearchException.class)
                 .hasMessageContaining("503");
 
-        // 500
         doThrow(HttpServerErrorException.create(HttpStatus.INTERNAL_SERVER_ERROR, "500", null, null, null))
                 .when(responseSpec).body(WikipediaApiResponse.class);
         assertThatThrownBy(() -> webSearchService.searchWikipedia("query", 3))
                 .isInstanceOf(ExternalSearchException.class)
                 .hasMessageContaining("500");
 
-        // RuntimeException
         doThrow(new RuntimeException("error"))
                 .when(responseSpec).body(WikipediaApiResponse.class);
         assertThatThrownBy(() -> webSearchService.searchWikipedia("query", 3))
@@ -135,14 +131,12 @@ class WebSearchServiceEdgeCasesTest {
         lenient().when(requestHeadersUriSpec.uri(any(Function.class))).thenReturn((RestClient.RequestHeadersSpec) requestHeadersSpec);
         lenient().when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
         
-        // 429
         doThrow(HttpClientErrorException.create(HttpStatus.TOO_MANY_REQUESTS, "429", null, null, null))
                 .when(responseSpec).body(com.truthlens.search.model.DuckDuckGoApiResponse.class);
         assertThatThrownBy(() -> webSearchService.searchDuckDuckGo("query", 3))
                 .isInstanceOf(ExternalSearchException.class)
                 .hasMessageContaining("429");
 
-        // 503
         doThrow(HttpServerErrorException.create(HttpStatus.SERVICE_UNAVAILABLE, "503", null, null, null))
                 .when(responseSpec).body(com.truthlens.search.model.DuckDuckGoApiResponse.class);
         assertThatThrownBy(() -> webSearchService.searchDuckDuckGo("query", 3))

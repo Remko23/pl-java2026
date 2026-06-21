@@ -11,7 +11,6 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // The unique ID from Keycloak
     @Column(nullable = false, unique = true)
     private String keycloakId;
 

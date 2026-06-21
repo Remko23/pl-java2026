@@ -113,21 +113,18 @@ class VerificationOrchestratorServiceTest {
         String claimText = "Another claim";
         String verificationId = "ver-id";
 
-        // Mock LLM returning complex JSON
         String complexJson = "{ \"queries\": [ {\"query\": \"q1\"}, {\"q\": \"q2\"}, {\"zapytanie\": \"q3\"}, \"{\\\"query\\\": \\\"q4\\\"}\", \"q5\" ] }";
         when(groqLlmService.askModel(anyString(), anyString())).thenReturn(complexJson);
         
         when(searchServiceClient.executeSearch(any())).thenReturn(new SearchExecutionResponse(List.of(
                 new SearchResult("Title", "http://example.com", "Snippet"))));
         
-        // Mock returning mixed verdicts to test average calculation and parsing
         when(juryVotingService.gatherVotes(anyString(), anyString())).thenReturn(List.of(
                 new ModelVoteResult("Llama3", "70", 90, "True reason"),
                 new ModelVoteResult("Mixtral", "40", 50, "False reason"),
                 new ModelVoteResult("Gemma", "FALSE", 80, "False reason")
         ));
 
-        // Call synchronously
         orchestratorService.processVerification(verificationId, claimText, null, "TEXT", null);
 
         verify(stateService).updateState(eq(verificationId), eq(VerificationStatus.COMPLETED),
