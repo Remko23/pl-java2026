@@ -458,7 +458,7 @@ class WebSearchServiceTest {
         @Test
         @DisplayName("should truncate very long text without separator to 60 chars")
         void shouldTruncateLongTextWithoutSeparator() {
-            String longText = "A".repeat(100); // 100 znaków bez " - "
+            String longText = "A".repeat(100);
 
             var apiResponse = new DuckDuckGoApiResponse(
                     null, null, null, null, null,

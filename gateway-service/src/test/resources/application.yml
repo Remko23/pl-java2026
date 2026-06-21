@@ -6,7 +6,7 @@ spring:
       enabled: false
   main:
     web-application-type: reactive
-  # Disable JWT validation startup check.
+
   security:
     oauth2:
       resourceserver:

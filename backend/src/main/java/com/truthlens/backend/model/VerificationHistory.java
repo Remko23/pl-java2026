@@ -15,9 +15,9 @@ public class VerificationHistory {
     @Indexed
     private String userId;
 
-    private String inputType; // "TEXT" or "IMAGE"
+    private String inputType;
     private String inputText;
-    private String fileName;  // only for IMAGE, nullable
+    private String fileName;
 
     private String finalVerdict;
     private double averageConfidence;

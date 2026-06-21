@@ -66,11 +66,6 @@ public class GatewayStepDefinitions {
     @When("the request is processed")
     public void the_request_is_processed() {
     }
-
-    // -------------------------------------------------------------------------
-    // Then / And steps
-    // -------------------------------------------------------------------------
-
     @Then("the response should NOT be {int} Unauthorized")
     public void the_response_should_not_be_unauthorized(int status) {
         int actualStatus = lastResponse.returnResult(String.class).getStatus().value();

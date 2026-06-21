@@ -19,7 +19,7 @@ body {
   height: 100% !important;
 }
 
-/* Deeper Background effect */
+
 body {
   background: radial-gradient(circle at 15% 20%, rgba(188, 19, 254, 0.2) 0%, transparent 45%),
     radial-gradient(circle at 85% 80%, rgba(255, 103, 0, 0.2) 0%, transparent 45%),
@@ -33,7 +33,7 @@ body {
   display: none !important;
 }
 
-/* The Login Card - targeting multiple possible Keycloak versions */
+
 .card-pf,
 .pf-c-card,
 .login-pf-page .card-pf {
@@ -67,7 +67,7 @@ body {
   border: none !important;
 }
 
-/* The neon TruthLens subtitle */
+
 #kc-page-title::after {
   content: 'TruthLens Verification';
   display: block;
@@ -127,7 +127,7 @@ body {
   outline: none !important;
 }
 
-/* Login Button */
+
 .btn-primary,
 .pf-m-primary {
   background: linear-gradient(135deg, rgba(188, 19, 254, 0.3) 0%, rgba(188, 19, 254, 0.1) 100%) !important;
@@ -154,7 +154,7 @@ body {
   transform: translateY(-1px) !important;
 }
 
-/* Register Link */
+
 #kc-registration,
 .login-pf-signup {
   margin-top: 2rem !important;
@@ -178,7 +178,7 @@ body {
   text-decoration: underline !important;
 }
 
-/* Hide clutter */
+
 #kc-login-options,
 .login-pf-settings {
   display: none !important;
@@ -189,12 +189,12 @@ body {
   border: none !important;
 }
 
-/* Checkbox style */
+
 input[type="checkbox"] {
   accent-color: var(--neon-purple) !important;
 }
 
-/* Feedback / Alert messages */
+
 #kc-feedback,
 .alert,
 .pf-c-alert {
@@ -208,7 +208,7 @@ input[type="checkbox"] {
   gap: 10px !important;
 }
 
-/* Error / Danger Alert */
+
 .alert-error,
 .pf-m-danger,
 .pf-c-alert.pf-m-danger {
@@ -226,7 +226,7 @@ input[type="checkbox"] {
   font-size: 0.9rem !important;
 }
 
-/* Success Alert */
+
 .alert-success,
 .pf-m-success,
 .pf-c-alert.pf-m-success {

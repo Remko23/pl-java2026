@@ -39,7 +39,7 @@ body::before {
   opacity: 0.8;
 }
 
-/* Glassmorphism Utility */
+
 .glass {
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
@@ -76,7 +76,7 @@ body::before {
 .text-neon-yellow { color: var(--neon-yellow); text-shadow: 0 0 10px rgba(255, 225, 53, 0.5); }
 .text-neon-orange { color: var(--neon-orange); text-shadow: 0 0 10px rgba(255, 103, 0, 0.5); }
 
-/* Magnifier Styles */
+
 .magnifier-container {
   position: relative;
   width: 380px;
@@ -188,7 +188,7 @@ h1, h2, h3 {
   letter-spacing: -0.02em;
 }
 
-/* Analyze Screen Styles */
+
 .tab-container {
   display: flex;
   gap: 1rem;

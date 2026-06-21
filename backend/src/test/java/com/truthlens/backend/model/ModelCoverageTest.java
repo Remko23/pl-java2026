@@ -21,7 +21,7 @@ class ModelCoverageTest {
         assertThat(user.getEmail()).isEqualTo("test@example.com");
         assertThat(user.getFirstName()).isEqualTo("John");
         assertThat(user.getLastName()).isEqualTo("Doe");
-        assertThat(user.getCreatedAt()).isNull(); // Not set because PrePersist not called
+        assertThat(user.getCreatedAt()).isNull();
     }
 
     @Test
