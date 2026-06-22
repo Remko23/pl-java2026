@@ -3,12 +3,10 @@ package com.truthlens.backend.steps;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.truthlens.backend.client.GroqApiClient;
-import com.truthlens.backend.client.OcrServiceClient;
 import com.truthlens.backend.client.SearchServiceClient;
 import com.truthlens.backend.model.*;
 import com.truthlens.backend.model.jury.GroqChatResponse;
 import com.truthlens.backend.model.jury.GroqMessage;
-import com.truthlens.backend.repository.VerificationHistoryRepository;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
@@ -59,6 +57,7 @@ public class VerificationStepDefinitions {
 
     @Given("the user is authenticated")
     public void theUserIsAuthenticated() {
+        // puste
     }
 
     @And("the external search service will return {int} web results contradicting the claim")
@@ -69,8 +68,7 @@ public class VerificationStepDefinitions {
                     "Contradicting Evidence " + i,
                     "https://science.example.com/evidence-" + i,
                     "Scientific evidence #" + i + " clearly contradicts the claim. "
-                            + "Multiple peer-reviewed studies confirm this is false."
-            ));
+                            + "Multiple peer-reviewed studies confirm this is false."));
         }
         when(searchServiceClient.executeSearch(any(SearchExecutionRequest.class)))
                 .thenReturn(new SearchExecutionResponse(searchResults));
@@ -84,8 +82,7 @@ public class VerificationStepDefinitions {
             juryVoteStubs.add(new JuryVoteStub(
                     row.get("Model"),
                     row.get("Vote"),
-                    Integer.parseInt(row.get("Confidence"))
-            ));
+                    Integer.parseInt(row.get("Confidence"))));
         }
 
         String queryJson = "[\"flat earth debunked\", \"earth shape scientific evidence\", \"flat earth conspiracy\"]";
@@ -96,7 +93,8 @@ public class VerificationStepDefinitions {
             int numericVerdict = "TRUE".equalsIgnoreCase(stub.vote()) ? 85 : 15;
             String voteJson = """
                     {"verdict": %d, "confidenceScore": %d, "reasoning": "%s model analysis: The claim has been evaluated against available evidence and determined to be %s with %d%% confidence."}
-                    """.formatted(numericVerdict, stub.confidence(), stub.model(), stub.vote(), stub.confidence());
+                    """
+                    .formatted(numericVerdict, stub.confidence(), stub.model(), stub.vote(), stub.confidence());
             juryResponses.add(buildGroqChatResponse(voteJson));
         }
 
@@ -112,12 +110,12 @@ public class VerificationStepDefinitions {
         String requestJson = objectMapper.writeValueAsString(new VerificationRequest(claimText));
 
         submitResult = mockMvc.perform(post("/api/v1/verifications")
-                        .with(jwt().jwt(builder -> builder
-                                .subject("test-user-id")
-                                .claim("preferred_username", "testuser")
-                                .claim("email", "test@truthlens.com")))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestJson))
+                .with(jwt().jwt(builder -> builder
+                        .subject("test-user-id")
+                        .claim("preferred_username", "testuser")
+                        .claim("email", "test@truthlens.com")))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
                 .andReturn();
 
         submitStatusCode = submitResult.getResponse().getStatus();
