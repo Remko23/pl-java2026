@@ -2,7 +2,6 @@ package com.truthlens.search.service;
 
 import com.truthlens.search.exception.ExternalSearchException;
 import com.truthlens.search.model.SearchExecutionRequest;
-import com.truthlens.search.model.SearchResultItem;
 import com.truthlens.search.model.WikipediaApiResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

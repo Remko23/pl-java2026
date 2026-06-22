@@ -65,7 +65,9 @@ public class GatewayStepDefinitions {
 
     @When("the request is processed")
     public void the_request_is_processed() {
+        // puste
     }
+
     @Then("the response should NOT be {int} Unauthorized")
     public void the_response_should_not_be_unauthorized(int status) {
         int actualStatus = lastResponse.returnResult(String.class).getStatus().value();
@@ -88,8 +90,7 @@ public class GatewayStepDefinitions {
     public void the_response_should_contain_header(String header, String value) {
         lastResponse.expectHeader().valueEquals(
                 Objects.requireNonNull(header),
-                Objects.requireNonNull(value)
-        );
+                Objects.requireNonNull(value));
     }
 
     @Then("the response should NOT contain header {string} with value {string}")
@@ -104,4 +105,3 @@ public class GatewayStepDefinitions {
         }
     }
 }
-

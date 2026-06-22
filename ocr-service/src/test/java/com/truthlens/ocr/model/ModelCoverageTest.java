@@ -15,21 +15,25 @@ class ModelCoverageTest {
         assertThat(response.extractedText()).isEqualTo("text");
         assertThat(response.hasManipulationArtifacts()).isTrue();
         assertThat(response.confidenceScore()).isEqualTo(80.0);
-        
+
         assertThat(response.toString()).contains("text");
         assertThat(response.hashCode()).isNotZero();
         assertThat(response).isEqualTo(new OcrExtractionResponse("text", true, 80.0));
     }
 
     @Test
-    void testGeminiModels() {
+    void testGeminiInlineData() {
         GeminiInlineData inlineData = new GeminiInlineData("image/jpeg", "base64");
         assertThat(inlineData.mimeType()).isEqualTo("image/jpeg");
         assertThat(inlineData.data()).isEqualTo("base64");
         assertThat(inlineData.toString()).contains("base64");
         assertThat(inlineData.hashCode()).isNotZero();
         assertThat(inlineData).isEqualTo(new GeminiInlineData("image/jpeg", "base64"));
+    }
 
+    @Test
+    void testGeminiPart() {
+        GeminiInlineData inlineData = new GeminiInlineData("image/jpeg", "base64");
         GeminiPart part1 = new GeminiPart("prompt", null);
         GeminiPart part2 = new GeminiPart(null, inlineData);
         assertThat(part1.text()).isEqualTo("prompt");
@@ -37,25 +41,43 @@ class ModelCoverageTest {
         assertThat(part1.toString()).contains("prompt");
         assertThat(part1.hashCode()).isNotZero();
         assertThat(part1).isEqualTo(new GeminiPart("prompt", null));
+    }
 
+    @Test
+    void testGeminiContent() {
+        GeminiPart part1 = new GeminiPart("prompt", null);
+        GeminiPart part2 = new GeminiPart(null, new GeminiInlineData("image/jpeg", "base64"));
         GeminiContent content = new GeminiContent(List.of(part1, part2));
         assertThat(content.parts()).hasSize(2);
         assertThat(content.toString()).isNotNull();
         assertThat(content.hashCode()).isNotZero();
         assertThat(content).isEqualTo(new GeminiContent(List.of(part1, part2)));
+    }
 
+    @Test
+    void testGeminiCandidate() {
+        GeminiContent content = new GeminiContent(List.of(new GeminiPart("prompt", null)));
         GeminiCandidate candidate = new GeminiCandidate(content);
         assertThat(candidate.content()).isEqualTo(content);
         assertThat(candidate.toString()).isNotNull();
         assertThat(candidate.hashCode()).isNotZero();
         assertThat(candidate).isEqualTo(new GeminiCandidate(content));
+    }
 
+    @Test
+    void testGeminiRequest() {
+        GeminiContent content = new GeminiContent(List.of(new GeminiPart("prompt", null)));
         GeminiRequest request = new GeminiRequest(List.of(content));
         assertThat(request.contents()).hasSize(1);
         assertThat(request.toString()).isNotNull();
         assertThat(request.hashCode()).isNotZero();
         assertThat(request).isEqualTo(new GeminiRequest(List.of(content)));
+    }
 
+    @Test
+    void testGeminiResponse() {
+        GeminiContent content = new GeminiContent(List.of(new GeminiPart("prompt", null)));
+        GeminiCandidate candidate = new GeminiCandidate(content);
         GeminiResponse response = new GeminiResponse(List.of(candidate));
         assertThat(response.candidates()).hasSize(1);
         assertThat(response.toString()).isNotNull();

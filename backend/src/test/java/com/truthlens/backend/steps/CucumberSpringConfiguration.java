@@ -9,7 +9,7 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
@@ -50,22 +50,22 @@ import static org.mockito.Mockito.when;
 @Import(CucumberSpringConfiguration.InMemoryRedisConfig.class)
 public class CucumberSpringConfiguration {
 
-    @MockBean
+    @MockitoBean
     JwtDecoder jwtDecoder;
 
-    @MockBean
+    @MockitoBean
     OcrServiceClient ocrServiceClient;
 
-    @MockBean
+    @MockitoBean
     SearchServiceClient searchServiceClient;
 
-    @MockBean
+    @MockitoBean
     GroqApiClient groqApiClient;
 
-    @MockBean
+    @MockitoBean
     VerificationHistoryRepository historyRepository;
 
-    @MockBean
+    @MockitoBean
     com.truthlens.backend.repository.UserRepository userRepository;
 
     @TestConfiguration

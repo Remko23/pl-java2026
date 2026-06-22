@@ -1,5 +1,6 @@
 package org.example.configserver;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -8,10 +9,11 @@ class ConfigServerApplicationTests {
 
     @Test
     void contextLoads() {
+        Assertions.assertDoesNotThrow(() -> {});
     }
 
     @Test
     void mainMethodLoads() {
-        ConfigServerApplication.main(new String[] {"--server.port=0"});
+        Assertions.assertDoesNotThrow(() -> ConfigServerApplication.main(new String[] {"--server.port=0"}));
     }
 }
