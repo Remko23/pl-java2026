@@ -27,27 +27,24 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 @CucumberContextConfiguration
-@SpringBootTest(
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-        properties = {
-                "spring.cloud.config.enabled=false",
-                "eureka.client.enabled=false",
-                "spring.autoconfigure.exclude=" +
-                        "org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration," +
-                        "org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration," +
-                        "org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration," +
-                        "org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration," +
-                        "org.springframework.boot.autoconfigure.data.mongo.MongoRepositoriesAutoConfiguration," +
-                        "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration," +
-                        "org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration," +
-                        "org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
-                "groq.api-url=http://localhost:9999",
-                "groq.api-key=test-key",
-                "groq.models=llama-3.1-8b-instant,llama-3.3-70b-versatile,gemma2-9b-it",
-                "spring.security.oauth2.resourceserver.jwt.issuer-uri=http://localhost:9999/realms/test",
-                "spring.main.allow-bean-definition-overriding=true"
-        }
-)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
+        "spring.cloud.config.enabled=false",
+        "eureka.client.enabled=false",
+        "spring.autoconfigure.exclude=" +
+                "org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration," +
+                "org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration," +
+                "org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration," +
+                "org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration," +
+                "org.springframework.boot.autoconfigure.data.mongo.MongoRepositoriesAutoConfiguration," +
+                "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration," +
+                "org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration," +
+                "org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
+        "groq.api-url=http://localhost:9999",
+        "groq.api-key=test-key",
+        "groq.models=llama-3.1-8b-instant,llama-3.3-70b-versatile,gemma2-9b-it",
+        "spring.security.oauth2.resourceserver.jwt.issuer-uri=http://localhost:9999/realms/test",
+        "spring.main.allow-bean-definition-overriding=true"
+})
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Import(CucumberSpringConfiguration.InMemoryRedisConfig.class)
